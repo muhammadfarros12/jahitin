@@ -6,7 +6,7 @@ export const Button = ({ label }: ButtonProps) => {
 	return (
 		<button
 			type="button"
-			style={{ background: "black", color: "white", padding: 10 }}
+			className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
 		>
 			{label}
 		</button>
