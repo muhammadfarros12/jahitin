@@ -9,13 +9,15 @@
 		"platform:dev": "pnpm --filter=platform run dev",
 		"dev": "pnpm --filter=platform --filter=api --filter=admin run dev",
 		"lint": "pnpm exec biome check",
-		"lint:fix": "pnpm exec biome check --write --unsafe"
+		"lint:fix": "pnpm exec biome check --write --unsafe",
+		"prepare": "husky"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"packageManager": "pnpm@10.26.2",
 	"devDependencies": {
-		"@biomejs/biome": "2.3.15"
+		"@biomejs/biome": "2.3.15",
+		"husky": "^9.1.7"
 	}
 }
