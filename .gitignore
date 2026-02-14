@@ -64,3 +64,5 @@ lerna-debug.log*
 count.txt
 todos.json
 __unconfig*
+
+**/generated/prisma
