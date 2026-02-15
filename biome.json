@@ -7,7 +7,12 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"includes": ["**", "!**/routeTree.gen.ts"]
+		"includes": [
+			"**",
+			"!**/routeTree.gen.ts",
+			"!**/generated/prisma/*",
+			"!**/dist/**/*"
+		]
 	},
 	"formatter": {
 		"enabled": true,

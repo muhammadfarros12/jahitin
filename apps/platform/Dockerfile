@@ -10,9 +10,14 @@ COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml ./
 COPY apps/platform/package.json ./apps/platform/
 COPY packages/ui/package.json ./packages/ui/
 
-RUN pnpm install
+# 3. Install dependencies (pnpm akan membuat symlink otomatis)
+RUN pnpm install --frozen-lockfile
 
 COPY . .
+
+# 5. PENTING: Build package UI terlebih dahulu!
+# Agar folder 'dist' atau output di @jahitin/ui tercipta
+RUN pnpm --filter @jahitin/ui build
 
 WORKDIR /app/apps/platform
 RUN pnpm build

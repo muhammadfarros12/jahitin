@@ -8,7 +8,7 @@ services:
     ports:
       - "5446:5432"
     volumes:
-      - "feedbase_data:/var/lib/postgresql/data"
+      - "jahitin_data:/var/lib/postgresql/data"
 
   api:
     build: 
@@ -29,7 +29,7 @@ services:
       context: .
       dockerfile: ./apps/admin/Dockerfile
     ports:
-      - "3000:3000"
+      - "4000:3000"
     environment:
       - NODE_ENV=production
 
@@ -38,10 +38,10 @@ services:
       context: .
       dockerfile: ./apps/platform/Dockerfile
     ports:
-      - "4000:4000"
+      - "3000:3000"
     environment:
       - NODE_ENV=production
 
 
 volumes:
-  feedbase_data:
+  jahitin_data:
