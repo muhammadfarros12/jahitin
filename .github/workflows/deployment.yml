@@ -42,7 +42,7 @@ jobs:
         run: pnpm lint
 
       - name: Deploy to server
-        uses: appleboy/ssh-action@v.1.2.0
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: 103.217.144.200
           username: farros
