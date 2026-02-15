@@ -42,6 +42,5 @@ services:
     environment:
       - NODE_ENV=production
 
-
 volumes:
   jahitin_data:
