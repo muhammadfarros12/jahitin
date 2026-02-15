@@ -46,7 +46,7 @@ jobs:
         with:
           host: 103.217.144.200
           username: farros
-          key: {{ secrets.SSH_PRIVATE_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd live
             git pull
