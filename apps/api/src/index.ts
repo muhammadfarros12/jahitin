@@ -1,13 +1,20 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
+import { prisma } from "./utils/prisma"
+import { cors } from "hono/cors";
+import { authRouter } from "./modules/auth/authRoute";
 
-const app = new Hono();
 
-console.log("ENV:", process.env.TEST);
-
-app.get("/", (c) => {
-	return c.text("Hello Hono!");
+const app = new Hono()
+	.use(cors())
+	.route("/auth", authRouter)
+	.get("/",async (c) => {
+	await prisma.user.findMany()
+	return c.json({message:"Test gak error",data: []})
 });
+
+//export api specification
+export type AppType = typeof app;
 
 serve(
 	{
