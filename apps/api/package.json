@@ -11,11 +11,13 @@
 	},
 	"dependencies": {
 		"@hono/node-server": "^1.19.9",
+		"@hono/zod-validator": "^0.7.6",
 		"@prisma/adapter-pg": "^7.4.0",
 		"@prisma/client": "^7.4.0",
 		"dotenv": "^17.3.1",
 		"hono": "^4.11.9",
-		"prisma": "^7.4.0"
+		"prisma": "^7.4.0",
+		"zod": "^4.3.6"
 	},
 	"devDependencies": {
 		"@types/node": "^20.11.17",
