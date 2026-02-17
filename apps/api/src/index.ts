@@ -1,13 +1,14 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
+import { authRouter } from "./modules/auth/routes";
+import { userRouter } from "./modules/user/routes";
 
 const app = new Hono();
 
 console.log("ENV:", process.env.TEST);
 
-app.get("/", (c) => {
-	return c.text("Hello Hono!");
-});
+app.route("/api", authRouter);
+app.route("/api/user", userRouter);
 
 serve(
 	{

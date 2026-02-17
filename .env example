@@ -1,0 +1,5 @@
+TEST=hello_server_digunakan_di_server_side
+VITE_TEST=hello_client_digunakan_di_client_side
+
+DATABASE_URL=isisendiri
+JWT_SECRET="jwt secret"
