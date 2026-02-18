@@ -1,14 +1,17 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { authRouter } from "./modules/auth/routes";
 import { userRouter } from "./modules/user/routes";
 
-const app = new Hono();
-
 console.log("ENV:", process.env.TEST);
+const app = new Hono()
+	.use(cors())
+	.route("/api", authRouter)
+	.route("/api/user", userRouter);
 
-app.route("/api", authRouter);
-app.route("/api/user", userRouter);
+//export api specification
+export type AppType = typeof app;
 
 serve(
 	{
