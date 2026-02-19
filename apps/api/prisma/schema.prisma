@@ -7,10 +7,82 @@ datasource db {
   provider = "postgresql"
 }
 
-model User{
-  id        Int   @id @default(autoincrement())
+enum OrderStatus {
+  ORDER_DITERIMA
+  APPROVAL_SAMPLE
+  MENUNGGU_ANTRIAN
+  PRODUKSI_BERJALAN
+  PENDING
+  QUALITY_CHECK
+  SIAP_DIAMBIL
+  ORDER_SELESAI
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
   email     String   @unique
   name      String?
   password  String
   createdAt DateTime @default(now())
+
+  orders         Order[]             @relation("OrderCreatedByUser")
+  statusUpdates  OrderStatusUpdate[] @relation("CreatedByUser")
+  resolvedIssues ProductionIssue[]   @relation("IssueResolvedBy")
+}
+
+model Order {
+  id                      Int         @id @default(autoincrement())
+  order_code              String      @unique
+  customer_name           String
+  order_description       String
+  estimated_finished_date DateTime
+  current_status          OrderStatus @default(ORDER_DITERIMA)
+  created_at              DateTime    @default(now())
+  updated_at              DateTime    @default(now())
+  created_by              Int?
+
+  createdBy        User?               @relation("OrderCreatedByUser", fields: [created_by], references: [id])
+  status_updates   OrderStatusUpdate[]
+  production_issue ProductionIssue?
+
+  @@index([order_code], name: "idx_orders_order_code")
+  @@index([current_status], name: "idx_orders_current_status")
+  @@index([customer_name], name: "idx_orders_customer_name")
+  @@index([created_at], name: "idx_orders_created_at")
+  @@index([created_by], name: "idx_orders_created_by")
+  @@map("orders")
+}
+
+model OrderStatusUpdate {
+  id         Int         @id @default(autoincrement())
+  order_id   Int
+  status     OrderStatus
+  notes      String?
+  created_at DateTime    @default(now())
+  created_by Int?
+
+  order Order @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  user  User? @relation("CreatedByUser", fields: [created_by], references: [id], onDelete: Cascade)
+
+  @@map("order_status_updates")
+}
+
+model ProductionIssue {
+  id                   Int         @id @default(autoincrement())
+  order_id             Int         @unique
+  previous_status      OrderStatus
+  issue_description    String
+  solution             String?
+  adjust_finished_date DateTime?
+  is_resolved          Boolean     @default(false)
+  resolved_at          DateTime?
+  resolved_by          Int?
+  created_at           DateTime    @default(now())
+  updated_at           DateTime    @default(now())
+
+  order    Order @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  resolver User? @relation("IssueResolvedBy", fields: [resolved_by], references: [id])
+
+  @@index([order_id], name: "idx_production_issues_order_id")
+  @@map("production_issues")
 }
