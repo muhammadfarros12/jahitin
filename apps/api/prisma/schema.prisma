@@ -7,10 +7,16 @@ datasource db {
   provider = "postgresql"
 }
 
-model User{
-  id        Int   @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  password  String
-  createdAt DateTime @default(now())
+model Order {
+  id                    String   @id @default(uuid())
+  admin_id              String
+  order_code            String   @unique
+  client_name           String
+  order_description     String?
+  current_status        String
+  estimated_finish_date DateTime?
+  is_picked_up          Boolean  @default(false)
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
 }
+
