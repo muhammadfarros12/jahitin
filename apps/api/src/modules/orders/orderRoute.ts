@@ -4,7 +4,7 @@ import { HTTPException } from "hono/http-exception";
 import { authMiddleware } from "../../middleware/authMiddleware";
 import { generateOrderCode } from "../../utils/orderCodeGenerator";
 import { prisma } from "../../utils/prisma";
-import type { UpdateOrderInput } from "./orderSchema";
+import type { UpdateOrderData } from "./orderSchema";
 import { createOrderSchema, updateOrderSchema } from "./orderSchema";
 
 export const orderRouter = new Hono<{ Variables: { user: number } }>()
@@ -59,7 +59,7 @@ export const orderRouter = new Hono<{ Variables: { user: number } }>()
 				throw new HTTPException(404, { message: "Order not found" });
 			}
 
-			const updateData: Partial<UpdateOrderInput> = {};
+			const updateData: UpdateOrderData = {};
 			if (body.customer_name !== undefined)
 				updateData.customer_name = body.customer_name;
 			if (body.order_description !== undefined)
