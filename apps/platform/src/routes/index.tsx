@@ -42,6 +42,7 @@ function formatDateTime(iso: string) {
 function OrderCard({ order }: { order: Order }) {
 	const currentIndex = getStatusIndex(order.current_status);
 	const isPending = order.current_status === "PENDING";
+	const hasRevisedDate = !!order.production_issue?.adjust_finished_date;
 
 	return (
 		<div
@@ -69,17 +70,79 @@ function OrderCard({ order }: { order: Order }) {
 					<span className="info-label">Nama Pemesan</span>
 					<span className="info-value">{order.customer_name}</span>
 				</div>
-				<div className="info-item">
-					<span className="info-label">Estimasi Selesai</span>
-					<span className="info-value">
-						{formatDate(order.estimated_finished_date)}
+
+				{/* Estimasi Selesai — highlight jika direvisi */}
+				<div
+					className={`info-item ${hasRevisedDate ? "info-item-revised" : ""}`}
+				>
+					<span className="info-label">
+						Estimasi Selesai
+						{hasRevisedDate && <span className="revised-tag">Direvisi</span>}
 					</span>
+					{hasRevisedDate ? (
+						<>
+							<span className="info-value info-value-revised">
+								{/* biome-ignore lint/style/noNonNullAssertion: guarded by hasRevisedDate */}
+								{formatDate(order.production_issue!.adjust_finished_date!)}
+							</span>
+							<span className="info-original-date">
+								Semula: {formatDate(order.estimated_finished_date)}
+							</span>
+						</>
+					) : (
+						<span className="info-value">
+							{formatDate(order.estimated_finished_date)}
+						</span>
+					)}
 				</div>
+
 				<div className="info-item info-full">
 					<span className="info-label">Deskripsi Order</span>
 					<span className="info-value">{order.order_description}</span>
 				</div>
 			</div>
+
+			{/* Production Issue Alert */}
+			{isPending && order.production_issue && (
+				<div className="issue-section">
+					<div className="issue-title">
+						<span>⚠</span> Kendala Produksi
+					</div>
+					<div className="issue-grid">
+						<div className="issue-item full">
+							<span className="issue-label">Kendala</span>
+							<span className="issue-value">
+								{order.production_issue.issue_description}
+							</span>
+						</div>
+						{order.production_issue.solution && (
+							<div className="issue-item full">
+								<span className="issue-label">Solusi</span>
+								<span className="issue-value">
+									{order.production_issue.solution}
+								</span>
+							</div>
+						)}
+						{order.production_issue.adjust_finished_date && (
+							<div className="issue-item">
+								<span className="issue-label">
+									Estimasi Penyesuaian Selesai
+								</span>
+								<span className="issue-value">
+									{formatDate(order.production_issue.adjust_finished_date)}
+								</span>
+							</div>
+						)}
+						{order.production_issue.is_resolved && (
+							<div className="issue-item">
+								<span className="issue-resolved">
+									✓ Kendala sudah diselesaikan
+								</span>
+							</div>
+						)}
+					</div>
+				</div>
+			)}
 
 			{/* Status Timeline */}
 			<div className="timeline-section">
@@ -265,6 +328,60 @@ function App() {
 					background: #1C1917;
 					color: #FAF7F2;
 					border-color: #1C1917;
+				}
+
+				/* PRODUCTION ISSUE */
+				.issue-section {
+					background: #FFF7ED;
+					border: 1px solid #FED7AA;
+					border-top: none;
+					padding: 20px 24px;
+				}
+				.issue-title {
+					font-size: 0.8rem;
+					font-weight: 600;
+					letter-spacing: 0.08em;
+					text-transform: uppercase;
+					color: #C2410C;
+					margin-bottom: 14px;
+					display: flex;
+					align-items: center;
+					gap: 6px;
+				}
+				.issue-grid {
+					display: grid;
+					grid-template-columns: 1fr 1fr;
+					gap: 12px;
+				}
+				.issue-item {
+					display: flex;
+					flex-direction: column;
+					gap: 4px;
+				}
+				.issue-item.full { grid-column: 1 / -1; }
+				.issue-label {
+					font-size: 0.7rem;
+					letter-spacing: 0.08em;
+					text-transform: uppercase;
+					color: #EA580C;
+					font-weight: 500;
+				}
+				.issue-value {
+					font-size: 0.9rem;
+					color: #7C2D12;
+					line-height: 1.5;
+				}
+				.issue-resolved {
+					display: inline-flex;
+					align-items: center;
+					gap: 4px;
+					font-size: 0.75rem;
+					color: #15803D;
+					background: #DCFCE7;
+					border: 1px solid #BBF7D0;
+					padding: 3px 10px;
+					border-radius: 20px;
+					margin-top: 8px;
 				}
 
 				/* HERO */
@@ -466,6 +583,7 @@ function App() {
 					gap: 1px;
 					background: #E8E0D5;
 					border: 1px solid #E8E0D5;
+					border-top: none;
 				}
 				.info-item {
 					background: #fff;
@@ -474,6 +592,9 @@ function App() {
 					flex-direction: column;
 					gap: 4px;
 				}
+				.info-item-revised {
+					background: #FFF7ED;
+				}
 				.info-full { grid-column: 1 / -1; }
 				.info-label {
 					font-size: 0.7rem;
@@ -481,12 +602,35 @@ function App() {
 					text-transform: uppercase;
 					color: #A8A29E;
 					font-weight: 500;
+					display: flex;
+					align-items: center;
+					gap: 6px;
 				}
 				.info-value {
 					font-size: 0.95rem;
 					color: #1C1917;
 					font-weight: 500;
 					line-height: 1.4;
+				}
+				.info-value-revised {
+					color: #C2410C;
+					font-weight: 600;
+				}
+				.info-original-date {
+					font-size: 0.75rem;
+					color: #A8A29E;
+					text-decoration: line-through;
+				}
+				.revised-tag {
+					display: inline-block;
+					background: #FEF3C7;
+					color: #A16207;
+					font-size: 0.6rem;
+					font-weight: 700;
+					padding: 1px 6px;
+					border-radius: 4px;
+					letter-spacing: 0.06em;
+					text-transform: uppercase;
 				}
 
 				/* TIMELINE */

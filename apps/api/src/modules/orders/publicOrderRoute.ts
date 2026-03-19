@@ -29,6 +29,15 @@ export const publicOrderRouter = new Hono().get(
 						},
 						orderBy: { created_at: "asc" },
 					},
+					production_issue: {
+						select: {
+							id: true,
+							issue_description: true,
+							solution: true,
+							adjust_finished_date: true,
+							is_resolved: true,
+						},
+					},
 				},
 			});
 

@@ -11,8 +11,8 @@ const app = new Hono()
 	.use(cors())
 	.route("/api", authRouter)
 	.route("/api/user", userRouter)
-	.route("/api", orderRouter)
-	.route("/api", publicOrderRouter);
+	.route("/api", publicOrderRouter)
+	.route("/api", orderRouter);
 
 //export api specification
 export type AppType = typeof app;
