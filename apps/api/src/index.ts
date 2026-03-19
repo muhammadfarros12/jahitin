@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { authRouter } from "./modules/auth/routes";
 import { orderRouter } from "./modules/orders/orderRoute";
+import { publicOrderRouter } from "./modules/orders/publicOrderRoute";
 import { userRouter } from "./modules/user/routes";
 
 console.log("ENV:", process.env.TEST);
@@ -10,7 +11,8 @@ const app = new Hono()
 	.use(cors())
 	.route("/api", authRouter)
 	.route("/api/user", userRouter)
-	.route("/api", orderRouter);
+	.route("/api", orderRouter)
+	.route("/api", publicOrderRouter);
 
 //export api specification
 export type AppType = typeof app;
