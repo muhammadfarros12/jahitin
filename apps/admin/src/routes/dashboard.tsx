@@ -1,10 +1,15 @@
+// apps/admin/src/routes/dashboard.tsx
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import { LogOut, Pencil, Scissors, Search, Trash2 } from "lucide-react";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { LogOut, Pencil, Plus, Scissors, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { CreateOrderModal } from "@/components/CreateOrderModal";
+import { DeleteOrderModal } from "@/components/DeleteOrderModal";
+import { UpdateStatusModal } from "@/components/UpdateStatusModal";
 import { fetchOrders } from "@/utils/orders";
 
 type OrderRow = {
+	id: number;
 	order_code: string;
 	customer_name: string;
 	order_description: string;
@@ -13,6 +18,12 @@ type OrderRow = {
 };
 
 export const Route = createFileRoute("/dashboard")({
+	beforeLoad: () => {
+		const token = localStorage.getItem("token");
+		if (!token) {
+			throw redirect({ to: "/login" });
+		}
+	},
 	component: RouteComponent,
 });
 
@@ -38,7 +49,6 @@ function getStatusBadge(status: string) {
 		SIAP_DIAMBIL: "bg-teal-50 text-teal-700 ring-1 ring-teal-200",
 		ORDER_SELESAI: "bg-green-50 text-green-700 ring-1 ring-green-200",
 	};
-
 	const dotColors: Record<string, string> = {
 		ORDER_DITERIMA: "bg-blue-500",
 		APPROVAL_SAMPLE: "bg-violet-500",
@@ -49,11 +59,9 @@ function getStatusBadge(status: string) {
 		SIAP_DIAMBIL: "bg-teal-500",
 		ORDER_SELESAI: "bg-green-500",
 	};
-
 	const style =
 		styles[status] ?? "bg-slate-50 text-slate-700 ring-1 ring-slate-200";
 	const dot = dotColors[status] ?? "bg-slate-400";
-
 	return (
 		<span
 			className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${style}`}
@@ -75,24 +83,11 @@ function formatDate(isoString: string): string {
 function SkeletonRow() {
 	return (
 		<tr className="animate-pulse">
-			<td className="px-6 py-4">
-				<div className="h-4 bg-slate-200 rounded w-3/4" />
-			</td>
-			<td className="px-6 py-4">
-				<div className="h-4 bg-slate-200 rounded w-3/4" />
-			</td>
-			<td className="px-6 py-4">
-				<div className="h-4 bg-slate-200 rounded w-3/4" />
-			</td>
-			<td className="px-6 py-4">
-				<div className="h-4 bg-slate-200 rounded w-3/4" />
-			</td>
-			<td className="px-6 py-4">
-				<div className="h-4 bg-slate-200 rounded w-3/4" />
-			</td>
-			<td className="px-6 py-4">
-				<div className="h-4 bg-slate-200 rounded w-3/4" />
-			</td>
+			{[1, 2, 3, 4, 5, 6].map((i) => (
+				<td key={i} className="px-6 py-4">
+					<div className="h-4 bg-slate-200 rounded w-3/4" />
+				</td>
+			))}
 		</tr>
 	);
 }
@@ -101,6 +96,13 @@ function RouteComponent() {
 	const [activeTab, setActiveTab] = useState("semua");
 	const [searchQuery, setSearchQuery] = useState("");
 	const [statusFilter, setStatusFilter] = useState("");
+
+	// Modal state
+	const [showCreateModal, setShowCreateModal] = useState(false);
+	const [updateStatusTarget, setUpdateStatusTarget] = useState<OrderRow | null>(
+		null,
+	);
+	const [deleteTarget, setDeleteTarget] = useState<OrderRow | null>(null);
 
 	const {
 		data: orders = [],
@@ -117,19 +119,22 @@ function RouteComponent() {
 			activeTab === "semua" ||
 			(activeTab === "aktif" && order.current_status !== "ORDER_SELESAI") ||
 			(activeTab === "selesai" && order.current_status === "ORDER_SELESAI");
-
 		const searchMatch =
 			order.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 			order.order_code.toLowerCase().includes(searchQuery.toLowerCase());
-
 		const statusMatch =
 			statusFilter === "" || order.current_status === statusFilter;
-
 		return tabMatch && searchMatch && statusMatch;
 	});
 
+	function handleLogout() {
+		localStorage.removeItem("token");
+		window.location.href = "/login";
+	}
+
 	return (
 		<div className="flex flex-col h-screen">
+			{/* Header */}
 			<header className="w-full bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
 				<div className="gap-2 flex items-center">
 					<div className="bg-indigo-600 rounded-xl p-2 flex items-center justify-center">
@@ -144,25 +149,39 @@ function RouteComponent() {
 					<div className="w-px h-5 bg-slate-200" />
 					<button
 						type="button"
+						onClick={handleLogout}
 						className="text-slate-500 hover:text-red-600 transition-colors cursor-pointer"
+						title="Logout"
 					>
 						<LogOut size={20} />
 					</button>
 				</div>
 			</header>
 
+			{/* Main */}
 			<main className="flex-1 bg-slate-50 overflow-auto px-6 py-8">
 				<div className="max-w-5xl mx-auto">
+					{/* Title + Create Button */}
 					<div className="flex items-center justify-between mb-6">
-						<h1 className="text-2xl font-bold text-slate-900">Daftar Order</h1>
+						<div>
+							<h1 className="text-2xl font-bold text-slate-900">
+								Daftar Order
+							</h1>
+							<p className="text-sm text-slate-500 mt-0.5">
+								{orders.length} order tersimpan
+							</p>
+						</div>
 						<button
 							type="button"
-							className="bg-indigo-600 text-white rounded-xl px-4 py-2 font-semibold hover:bg-indigo-700 transition-colors cursor-pointer"
+							onClick={() => setShowCreateModal(true)}
+							className="flex items-center gap-2 bg-indigo-600 text-white rounded-xl px-4 py-2.5 font-semibold hover:bg-indigo-700 transition-colors cursor-pointer text-sm"
 						>
+							<Plus size={16} />
 							Buat Order
 						</button>
 					</div>
 
+					{/* Filters */}
 					<div className="flex flex-wrap items-center justify-between gap-3 mb-6">
 						<div className="inline-flex bg-slate-100 rounded-xl p-1 gap-1 w-full sm:w-auto">
 							{[
@@ -176,7 +195,7 @@ function RouteComponent() {
 									onClick={() => setActiveTab(tab.value)}
 									className={`px-4 py-2 w-full sm:w-auto rounded-lg text-sm font-medium transition-all cursor-pointer ${
 										activeTab === tab.value
-											? "bg-white text-slate-900"
+											? "bg-white text-slate-900 shadow-sm"
 											: "text-slate-500 hover:text-slate-700"
 									}`}
 								>
@@ -203,18 +222,16 @@ function RouteComponent() {
 								className="px-4 py-2.5 w-full sm:w-auto bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
 							>
 								<option value="">Semua Status</option>
-								<option value="ORDER_DITERIMA">Order Diterima</option>
-								<option value="APPROVAL_SAMPLE">Approval Sample</option>
-								<option value="MENUNGGU_ANTRIAN">Menunggu Antrian</option>
-								<option value="PRODUKSI_BERJALAN">Produksi Berjalan</option>
-								<option value="PENDING">Pending</option>
-								<option value="QUALITY_CHECK">Quality Check</option>
-								<option value="SIAP_DIAMBIL">Siap Diambil</option>
-								<option value="ORDER_SELESAI">Order Selesai</option>
+								{Object.entries(STATUS_LABEL).map(([value, label]) => (
+									<option key={value} value={value}>
+										{label}
+									</option>
+								))}
 							</select>
 						</div>
 					</div>
 
+					{/* Error */}
 					{isError && (
 						<div className="bg-red-50 border border-red-200 rounded-2xl px-6 py-4 mb-4 flex items-center justify-between">
 							<p className="text-sm text-red-700 font-medium">
@@ -230,9 +247,10 @@ function RouteComponent() {
 						</div>
 					)}
 
+					{/* Table */}
 					<div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
 						<div className="overflow-x-auto">
-							<table className="w-full min-w-175">
+							<table className="w-full min-w-[700px]">
 								<thead>
 									<tr className="bg-slate-100">
 										{[
@@ -254,13 +272,7 @@ function RouteComponent() {
 								</thead>
 								<tbody>
 									{isLoading ? (
-										<>
-											<SkeletonRow key="skeleton-1" />
-											<SkeletonRow key="skeleton-2" />
-											<SkeletonRow key="skeleton-3" />
-											<SkeletonRow key="skeleton-4" />
-											<SkeletonRow key="skeleton-5" />
-										</>
+										[1, 2, 3, 4, 5].map((i) => <SkeletonRow key={i} />)
 									) : filteredOrders.length === 0 ? (
 										<tr>
 											<td colSpan={6} className="px-6 py-16 text-center">
@@ -281,9 +293,9 @@ function RouteComponent() {
 										filteredOrders.map((order) => (
 											<tr
 												key={order.order_code}
-												className="hover:bg-slate-50 transition-colors"
+												className="hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0"
 											>
-												<td className="px-6 py-4 text-sm font-medium text-indigo-600 hover:text-indigo-700 hover:underline transition-colors cursor-pointer whitespace-nowrap">
+												<td className="px-6 py-4 text-sm font-medium text-indigo-600 font-mono whitespace-nowrap">
 													{order.order_code}
 												</td>
 												<td className="px-6 py-4 text-sm font-medium text-slate-900 whitespace-nowrap">
@@ -299,18 +311,22 @@ function RouteComponent() {
 													{formatDate(order.estimated_finished_date)}
 												</td>
 												<td className="px-6 py-4 whitespace-nowrap">
-													<div className="flex items-center gap-2">
+													<div className="flex items-center gap-1">
 														<button
 															type="button"
-															className="p-1.5 text-slate-400 hover:text-indigo-600 transition-colors cursor-pointer"
+															onClick={() => setUpdateStatusTarget(order)}
+															className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors cursor-pointer"
+															title="Update Status"
 														>
-															<Pencil size={16} />
+															<Pencil size={15} />
 														</button>
 														<button
 															type="button"
-															className="p-1.5 text-slate-400 hover:text-red-500 transition-colors cursor-pointer"
+															onClick={() => setDeleteTarget(order)}
+															className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+															title="Hapus Order"
 														>
-															<Trash2 size={16} />
+															<Trash2 size={15} />
 														</button>
 													</div>
 												</td>
@@ -323,6 +339,27 @@ function RouteComponent() {
 					</div>
 				</div>
 			</main>
+
+			{/* Modals */}
+			{showCreateModal && (
+				<CreateOrderModal onClose={() => setShowCreateModal(false)} />
+			)}
+			{updateStatusTarget && (
+				<UpdateStatusModal
+					orderId={updateStatusTarget.id}
+					orderCode={updateStatusTarget.order_code}
+					currentStatus={updateStatusTarget.current_status}
+					onClose={() => setUpdateStatusTarget(null)}
+				/>
+			)}
+			{deleteTarget && (
+				<DeleteOrderModal
+					orderId={deleteTarget.id}
+					orderCode={deleteTarget.order_code}
+					customerName={deleteTarget.customer_name}
+					onClose={() => setDeleteTarget(null)}
+				/>
+			)}
 		</div>
 	);
 }
