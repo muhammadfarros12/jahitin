@@ -14,15 +14,30 @@ export const orderRouter = new Hono<{ Variables: { user: number } }>()
 		const body = c.req.valid("json");
 		try {
 			const orderCode = await generateOrderCode();
-			const newOrder = await prisma.order.create({
-				data: {
-					order_code: orderCode,
-					customer_name: body.customer_name,
-					order_description: body.order_description,
-					estimated_finished_date: body.estimated_finished_date,
-					created_by: userId,
-				},
+
+			const newOrder = await prisma.$transaction(async (tx) => {
+				const order = await tx.order.create({
+					data: {
+						order_code: orderCode,
+						customer_name: body.customer_name,
+						order_description: body.order_description,
+						estimated_finished_date: body.estimated_finished_date,
+						created_by: userId,
+					},
+				});
+
+				await tx.orderStatusUpdate.create({
+					data: {
+						order_id: order.id,
+						status: "ORDER_DITERIMA",
+						notes: "Order awal diterima",
+						created_by: userId,
+					},
+				});
+
+				return order;
 			});
+
 			return c.json(
 				{
 					status: true,
@@ -41,7 +56,7 @@ export const orderRouter = new Hono<{ Variables: { user: number } }>()
 			const orderList = await prisma.order.findMany({
 				include: {
 					status_updates: true,
-					production_issue: true,
+					production_issues: true,
 				},
 			});
 			return c.json({ success: true, data: orderList }, 200);
