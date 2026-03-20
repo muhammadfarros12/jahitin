@@ -28,9 +28,10 @@ model Order {
   created_at              DateTime            @default(now())
   updated_at              DateTime            @default(now())
   created_by              Int?
+  
   status_updates          OrderStatusUpdate[]
   createdBy               User?               @relation("OrderCreatedByUser", fields: [created_by], references: [id])
-  production_issue        ProductionIssue?
+  production_issues       ProductionIssue[]
 
   @@index([order_code], map: "idx_orders_order_code")
   @@index([current_status], map: "idx_orders_current_status")
@@ -47,6 +48,7 @@ model OrderStatusUpdate {
   notes      String?
   created_at DateTime    @default(now())
   created_by Int?
+
   user       User?       @relation("CreatedByUser", fields: [created_by], references: [id], onDelete: Cascade)
   order      Order       @relation(fields: [order_id], references: [id], onDelete: Cascade)
 
@@ -55,7 +57,7 @@ model OrderStatusUpdate {
 
 model ProductionIssue {
   id                   Int         @id @default(autoincrement())
-  order_id             Int         @unique
+  order_id             Int
   previous_status      OrderStatus
   issue_description    String
   solution             String?
@@ -65,6 +67,8 @@ model ProductionIssue {
   resolved_by          Int?
   created_at           DateTime    @default(now())
   updated_at           DateTime    @default(now())
+
+  //relation
   order                Order       @relation(fields: [order_id], references: [id], onDelete: Cascade)
   resolver             User?       @relation("IssueResolvedBy", fields: [resolved_by], references: [id])
 

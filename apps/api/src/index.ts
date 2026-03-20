@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { authRouter } from "./modules/auth/routes";
+import { orderIssueRouter } from "./modules/orderIssue/orderIssueRoute";
 import { orderRouter } from "./modules/orders/orderRoute";
 import { publicOrderRouter } from "./modules/orders/publicOrderRoute";
 import { statusUpdateRouter } from "./modules/orders/statusUpdateRoute";
@@ -23,7 +24,8 @@ const app = new Hono()
 
 	.route("/api", publicOrderRouter)
 	.route("/api", orderRouter)
-	.route("/api", statusUpdateRouter);
+	.route("/api", statusUpdateRouter)
+	.route("/api", orderIssueRouter);
 
 //export api specification
 export type AppType = typeof app;
