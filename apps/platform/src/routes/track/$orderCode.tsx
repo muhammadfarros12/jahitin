@@ -456,7 +456,7 @@ function TrackingPage() {
 											<span className="info-value info-value-revised">
 												{/* biome-ignore lint/style/noNonNullAssertion: guarded by hasRevisedDate */}
 												{formatDate(
-													order.production_issue!.adjust_finished_date!,
+													order.production_issue?.adjust_finished_date ?? "",
 												)}
 											</span>
 											<span className="info-original-date">
