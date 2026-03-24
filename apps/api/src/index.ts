@@ -1,6 +1,7 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { logger } from "hono/logger";
 import { authRouter } from "./modules/auth/routes";
 import { orderRouter } from "./modules/orders/orderRoute";
 import { publicOrderRouter } from "./modules/orders/publicOrderRoute";
@@ -9,7 +10,14 @@ import { userRouter } from "./modules/user/routes";
 
 console.log("ENV:", process.env.TEST);
 const app = new Hono()
-	.use(cors())
+	.use(logger())
+	.use(
+		cors({
+			origin: "*",
+			allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+			allowHeaders: ["Content-Type", "Authorization"],
+		}),
+	)
 	.route("/api", authRouter)
 	.route("/api/user", userRouter)
 

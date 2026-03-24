@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "sonner";
+import { AuthProvider } from "@/lib/auth-context";
 import appCss from "../styles.css?url";
 
 export const queryClient = new QueryClient();
@@ -16,13 +17,26 @@ export const Route = createRootRoute({
 				content: "width=device-width, initial-scale=1",
 			},
 			{
-				title: "TanStack Start Starter",
+				title: "Jahitin Admin",
 			},
 		],
 		links: [
 			{
 				rel: "stylesheet",
 				href: appCss,
+			},
+            {
+				rel: "preconnect",
+				href: "https://fonts.googleapis.com",
+			},
+			{
+				rel: "preconnect",
+				href: "https://fonts.gstatic.com",
+				crossOrigin: "anonymous",
+			},
+            {
+				rel: "stylesheet",
+				href: "https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Merriweather:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap",
 			},
 		],
 	}),
@@ -37,8 +51,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body>
 				<QueryClientProvider client={queryClient}>
-					{children}
-					<Toaster />
+                    <AuthProvider>
+					    {children}
+                    </AuthProvider>
+					<Toaster richColors position="top-right" />
 				</QueryClientProvider>
 				<Scripts />
 			</body>

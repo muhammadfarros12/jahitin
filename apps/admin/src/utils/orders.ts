@@ -1,6 +1,7 @@
 import { apiClient } from "@/utils/api";
+import type { Order } from "@/types";
 
-export async function fetchOrders() {
+export async function fetchOrders(): Promise<Order[]> {
 	const token = localStorage.getItem("token");
 
 	const res = await apiClient.api.orders.$get(
@@ -20,5 +21,6 @@ export async function fetchOrders() {
 	}
 
 	const json = await res.json();
-	return json.data;
+	// @ts-ignore - response has data property
+	return json.data as Order[];
 }
