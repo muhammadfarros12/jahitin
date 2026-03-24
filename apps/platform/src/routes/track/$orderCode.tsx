@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getOrderByCode, type Order } from "@/utils/api";
 
 export const Route = createFileRoute("/track/$orderCode")({
@@ -76,12 +76,45 @@ function TrackingPage() {
 	const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 	const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-	function clearPolling() {
+	// function clearPolling() {
+	// 	if (intervalRef.current) clearInterval(intervalRef.current);
+	// 	if (countdownRef.current) clearInterval(countdownRef.current);
+	// }
+
+	// 1. Bungkus dengan useCallback agar referensinya stabil
+	const clearPolling = useCallback(() => {
 		if (intervalRef.current) clearInterval(intervalRef.current);
 		if (countdownRef.current) clearInterval(countdownRef.current);
-	}
+	}, []);
 
-	function startPolling() {
+	const fetchOrder = useCallback(
+		async (silent = false) => {
+			if (!silent) setLoading(true);
+			else setIsRefreshing(true);
+
+			try {
+				const result = await getOrderByCode(orderCode);
+				if (!result) {
+					setNotFound(true);
+					setOrder(null);
+					clearPolling();
+				} else {
+					setOrder(result);
+					setNotFound(false);
+					setLastUpdated(new Date());
+					setCountdown(POLL_INTERVAL_MS);
+					if (result.current_status === "ORDER_SELESAI") clearPolling();
+				}
+			} finally {
+				if (!silent) setLoading(false);
+				else setIsRefreshing(false);
+			}
+		},
+		[orderCode, clearPolling],
+	);
+
+	// 3. Tambahkan dependensi clearPolling dan fetchOrder
+	const startPolling = useCallback(() => {
 		clearPolling();
 		setCountdown(POLL_INTERVAL_MS);
 
@@ -92,30 +125,43 @@ function TrackingPage() {
 		intervalRef.current = setInterval(() => {
 			fetchOrder(true);
 		}, POLL_INTERVAL_MS);
-	}
+	}, [clearPolling, fetchOrder]);
 
-	async function fetchOrder(silent = false) {
-		if (!silent) setLoading(true);
-		else setIsRefreshing(true);
+	// function startPolling() {
+	// 	clearPolling();
+	// 	setCountdown(POLL_INTERVAL_MS);
 
-		try {
-			const result = await getOrderByCode(orderCode);
-			if (!result) {
-				setNotFound(true);
-				setOrder(null);
-				clearPolling();
-			} else {
-				setOrder(result);
-				setNotFound(false);
-				setLastUpdated(new Date());
-				setCountdown(POLL_INTERVAL_MS);
-				if (result.current_status === "ORDER_SELESAI") clearPolling();
-			}
-		} finally {
-			if (!silent) setLoading(false);
-			else setIsRefreshing(false);
-		}
-	}
+	// 	countdownRef.current = setInterval(() => {
+	// 		setCountdown((prev) => Math.max(0, prev - 1000));
+	// 	}, 1000);
+
+	// 	intervalRef.current = setInterval(() => {
+	// 		fetchOrder(true);
+	// 	}, POLL_INTERVAL_MS);
+	// }
+
+	// async function fetchOrder(silent = false) {
+	// 	if (!silent) setLoading(true);
+	// 	else setIsRefreshing(true);
+
+	// 	try {
+	// 		const result = await getOrderByCode(orderCode);
+	// 		if (!result) {
+	// 			setNotFound(true);
+	// 			setOrder(null);
+	// 			clearPolling();
+	// 		} else {
+	// 			setOrder(result);
+	// 			setNotFound(false);
+	// 			setLastUpdated(new Date());
+	// 			setCountdown(POLL_INTERVAL_MS);
+	// 			if (result.current_status === "ORDER_SELESAI") clearPolling();
+	// 		}
+	// 	} finally {
+	// 		if (!silent) setLoading(false);
+	// 		else setIsRefreshing(false);
+	// 	}
+	// }
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: orderCode is stable
 	useEffect(() => {
@@ -454,7 +500,6 @@ function TrackingPage() {
 									{hasRevisedDate ? (
 										<>
 											<span className="info-value info-value-revised">
-												{/* biome-ignore lint/style/noNonNullAssertion: guarded by hasRevisedDate */}
 												{formatDate(
 													order.production_issue?.adjust_finished_date ?? "",
 												)}

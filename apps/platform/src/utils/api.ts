@@ -8,6 +8,20 @@ export interface OrderStatusUpdate {
 	created_at: string;
 }
 
+export interface ProductionIssue {
+	id: number;
+	order_id: number;
+	previous_status: string;
+	issue_description: string;
+	solution: string | null;
+	adjust_finished_date: string | null;
+	is_resolved: boolean;
+	resolved_at: string | null;
+	resolved_by: number | null;
+	created_at: string;
+	updated_at: string;
+}
+
 export interface Order {
 	id: number;
 	order_code: string;
@@ -18,6 +32,7 @@ export interface Order {
 	created_at: string;
 	updated_at: string;
 	status_updates: OrderStatusUpdate[];
+	production_issue?: ProductionIssue | null;
 }
 
 export async function getOrderByCode(orderCode: string): Promise<Order | null> {
