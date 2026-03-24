@@ -1,6 +1,18 @@
-import { X } from "lucide-react";
+"use client"
 import { useState } from "react";
 import { useCreateOrder } from "@/modules/orders/hooks/useCreateOrder";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogDescription,
+  DialogFooter
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 interface Props {
 	onClose: () => void;
@@ -23,111 +35,61 @@ export function CreateOrderModal({ onClose }: Props) {
 	}
 
 	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-			{/* Backdrop */}
-			<button
-				type="button"
-				className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm w-full cursor-default"
-				onClick={onClose}
-				aria-label="Tutup modal"
-			/>
+		<Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+			<DialogContent className="sm:max-w-[425px]">
+				<DialogHeader>
+					<DialogTitle>Buat Order Baru</DialogTitle>
+					<DialogDescription>
+						Kode order akan digenerate otomatis setelah order berhasil dibuat.
+					</DialogDescription>
+				</DialogHeader>
 
-			{/* Modal */}
-			<div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl shadow-slate-200/60 border border-slate-100 overflow-hidden">
-				{/* Header */}
-				<div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
-					<div>
-						<h2 className="text-lg font-bold text-slate-900">
-							Buat Order Baru
-						</h2>
-						<p className="text-xs text-slate-500 mt-0.5">
-							Kode order akan digenerate otomatis
-						</p>
-					</div>
-					<button
-						type="button"
-						onClick={onClose}
-						className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
-					>
-						<X size={18} />
-					</button>
-				</div>
-
-				{/* Form */}
-				<form onSubmit={handleSubmit} className="p-6 space-y-5">
-					<div>
-						<label
-							htmlFor="customer_name"
-							className="block text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2"
-						>
-							Nama Pemesan
-						</label>
-						<input
+				<form onSubmit={handleSubmit} className="space-y-4 py-4">
+					<div className="space-y-2">
+						<Label htmlFor="customer_name">Nama Pemesan</Label>
+						<Input
 							id="customer_name"
-							type="text"
 							required
 							value={customerName}
 							onChange={(e) => setCustomerName(e.target.value)}
 							placeholder="Contoh: Budi Santoso"
-							className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all"
 						/>
 					</div>
 
-					<div>
-						<label
-							htmlFor="order_description"
-							className="block text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2"
-						>
-							Deskripsi Order
-						</label>
-						<textarea
+					<div className="space-y-2">
+						<Label htmlFor="order_description">Deskripsi Order</Label>
+						<Textarea
 							id="order_description"
 							required
-							rows={3}
 							value={orderDescription}
 							onChange={(e) => setOrderDescription(e.target.value)}
 							placeholder="Contoh: Kaos polos 50 pcs warna hitam, ukuran M-XL"
-							className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all resize-none"
+							rows={3}
 						/>
 					</div>
 
-					<div>
-						<label
-							htmlFor="estimated_date"
-							className="block text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2"
-						>
-							Estimasi Tanggal Selesai
-						</label>
-						<input
+					<div className="space-y-2">
+						<Label htmlFor="estimated_date">Estimasi Tanggal Selesai</Label>
+						<Input
 							id="estimated_date"
 							type="date"
 							required
 							value={estimatedFinishedDate}
 							onChange={(e) => setEstimatedFinishedDate(e.target.value)}
 							min={new Date().toISOString().split("T")[0]}
-							className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all"
 						/>
 					</div>
 
-					{/* Footer */}
-					<div className="flex gap-3 pt-2">
-						<button
-							type="button"
-							onClick={onClose}
-							className="flex-1 px-4 py-3 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer"
-						>
+					<DialogFooter className="pt-4">
+						<Button type="button" variant="outline" onClick={onClose}>
 							Batal
-						</button>
-						<button
-							type="submit"
-							disabled={isPending}
-							className="flex-1 px-4 py-3 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-						>
+						</Button>
+						<Button type="submit" disabled={isPending}>
 							{isPending ? "Menyimpan..." : "Buat Order"}
-						</button>
-					</div>
+						</Button>
+					</DialogFooter>
 				</form>
-			</div>
-		</div>
+			</DialogContent>
+		</Dialog>
 	);
 }

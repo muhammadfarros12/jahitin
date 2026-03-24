@@ -1,171 +1,124 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLogin } from "@/modules/auth/hooks/useLogin";
+import { Scissors, Moon, Sun, Lock, Mail } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Card, CardContent } from "@/components/ui/card";
 
 export const Route = createFileRoute("/login")({
-	component: RouteComponent,
+  component: RouteComponent,
 });
 
 function RouteComponent() {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
-	const { mutate: submitLogin, isPending } = useLogin();
+  const { mutate: submitLogin, isPending } = useLogin();
 
-	function handleSubmitLogin(event: React.FormEvent) {
-		event.preventDefault();
-		submitLogin({ email, password });
-	}
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") setIsDarkMode(true);
+  }, []);
 
-	return (
-		<div>
-			<div className="bg-slate-50 font-sans min-h-screen flex items-center justify-center p-4">
-				<div className="max-w-md w-full">
-					<div className="text-center mb-10">
-						<div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-2xl shadow-lg shadow-indigo-200 mb-4">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								className="h-8 w-8 text-white"
-								fill="none"
-								viewBox="0 0 24 24"
-								stroke="currentColor"
-								aria-label="Admin Icon"
-							>
-								<title>Admin Icon</title>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-								/>
-							</svg>
-						</div>
-						<h1 className="text-3xl font-black text-slate-800 tracking-tighter">
-							JAHITIN <span className="text-indigo-600">ADMIN</span>
-						</h1>
-						<p className="text-slate-500 mt-2 text-sm">
-							Kelola order dan status produksi konveksi.
-						</p>
-					</div>
+  useEffect(() => {
+    if (isDarkMode) document.documentElement.classList.add("dark");
+    else document.documentElement.classList.remove("dark");
+    localStorage.setItem("theme", isDarkMode ? "dark" : "light");
+  }, [isDarkMode]);
 
-					<div className="bg-white p-8 rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100">
-						<form className="space-y-5" onSubmit={handleSubmitLogin}>
-							<div>
-								<label
-									htmlFor="email"
-									className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2"
-								>
-									Akses Admin
-								</label>
-								<div className="relative">
-									<span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											className="h-5 w-5"
-											fill="none"
-											viewBox="0 0 24 24"
-											stroke="currentColor"
-											aria-label="Email Icon"
-										>
-											<title>Email Icon</title>
-											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												stroke-width="2"
-												d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.206"
-											/>
-										</svg>
-									</span>
-									<input
-										id="email"
-										type="email"
-										value={email}
-										required
-										placeholder="Email@jahitin.com"
-										onChange={(e) => setEmail(e.target.value)}
-										className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:outline-none transition-all"
-									/>
-								</div>
-							</div>
+  function handleSubmitLogin(event: React.FormEvent) {
+    event.preventDefault();
+    submitLogin({ email, password });
+  }
 
-							<div>
-								<div className="flex justify-between mb-2">
-									<label
-										htmlFor="password"
-										className="block text-xs font-bold text-slate-500 uppercase tracking-widest"
-									>
-										Password
-									</label>
-								</div>
-								<div className="relative">
-									<span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											className="h-5 w-5"
-											fill="none"
-											viewBox="0 0 24 24"
-											stroke="currentColor"
-											aria-label="Password Icon"
-										>
-											<title>Password Icon</title>
-											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												stroke-width="2"
-												d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-											/>
-										</svg>
-									</span>
-									<input
-										id="password"
-										type="password"
-										required
-										value={password}
-										onChange={(e) => setPassword(e.target.value)}
-										placeholder="Password"
-										className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:outline-none transition-all"
-									/>
-								</div>
-							</div>
+  return (
+    <div className="bg-background text-foreground transition-colors duration-300 min-h-screen flex flex-col items-center justify-center p-6 md:p-4 overflow-x-hidden relative">
+      <div className="absolute top-6 right-6 md:top-8 md:right-8 flex items-center gap-3 bg-card border border-border p-2 px-3 rounded-full shadow-sm z-10">
+        {isDarkMode ? <Moon className="h-4 w-4 text-primary" /> : <Sun className="h-4 w-4 text-primary" />}
+        <Switch checked={isDarkMode} onCheckedChange={setIsDarkMode} aria-label="Toggle dark mode" />
+      </div>
 
-							<div className="flex items-center">
-								<input
-									type="checkbox"
-									id="remember"
-									className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500"
-								/>
-								<label
-									htmlFor="remember"
-									className="ml-2 text-sm text-slate-600 italic"
-								>
-									Ingat perangkat ini
-								</label>
-							</div>
-							<button
-								type="submit"
-								disabled={isPending}
-								className="w-full bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-indigo-600 hover:-translate-y-0.5 transition-all active:scale-95 
-                disabled:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
-							>
-								{isPending ? "Login in ..." : "Login"}
-							</button>
-						</form>
-					</div>
+      <div className="max-w-[420px] w-full flex flex-col pt-12 md:pt-0">
+        <div className="text-center mb-10 md:mb-8">
+          <div className="inline-flex items-center justify-center mb-4 group transition-all duration-500 hover:rotate-12">
+            <Scissors className="h-12 w-12 text-primary" />
+          </div>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2 text-foreground">JAHITIN</h1>
+          <p className="text-muted-foreground text-xs md:text-sm font-medium tracking-wide">Admin Dashboard & Order Management</p>
+        </div>
 
-					<div className="mt-8 text-center">
-						<p className="text-sm text-slate-500">
-							Bukan Admin?
-							<a
-								href="http://localhost:3000"
-								className="text-indigo-600 font-bold hover:underline"
-							>
-								{" "}
-								Cek Status Pesanan Anda
-							</a>
-						</p>
-					</div>
-				</div>
-			</div>
-		</div>
-	);
+        <Card className="shadow-none border border-border bg-card">
+          <CardContent className="p-8">
+            <form className="space-y-5" onSubmit={handleSubmitLogin}>
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-muted-foreground">Admin Email</Label>
+                <div className="relative group">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    placeholder="name@jahitin.com" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required 
+                    className="pl-11 h-12"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <Label htmlFor="password" title="password" className="text-muted-foreground">Password</Label>
+                  <button type="button" className="text-[10px] font-bold text-primary uppercase tracking-widest hover:underline">Forgot?</button>
+                </div>
+                <div className="relative group">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <Input 
+                    id="password" 
+                    type="password" 
+                    placeholder="••••••••" 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required 
+                    className="pl-11 h-12"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 py-1">
+                <input type="checkbox" id="remember" className="rounded-sm border-muted w-4 h-4 accent-primary" />
+                <label htmlFor="remember" className="text-xs text-muted-foreground font-medium cursor-pointer">Remember this device</label>
+              </div>
+
+              <Button 
+                type="submit" 
+                className="w-full h-12 font-bold text-base rounded-xl mt-2 relative overflow-hidden group/btn"
+                disabled={isPending}
+              >
+                {isPending ? (
+                  <span className="flex items-center gap-2">
+                    <span className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                    Logging in...
+                  </span>
+                ) : (
+                  "Login"
+                )}
+                <div className="absolute inset-0 bg-white/10 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        <div className="mt-8 text-center animate-in fade-in slide-in-from-bottom-2 duration-700 delay-300">
+          <p className="text-sm text-muted-foreground">
+            Bukan Admin? <a href="#" className="text-primary font-bold hover:underline transition-all">Track Pesanan</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 }

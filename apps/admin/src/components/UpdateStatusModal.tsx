@@ -1,9 +1,23 @@
-import { AlertTriangle, X } from "lucide-react";
+"use client"
+import { AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import {
 	type UpdateStatusInput,
 	useUpdateStatus,
 } from "@/modules/orders/hooks/useUpdateStatus";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogDescription,
+  DialogFooter
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 const STATUS_OPTIONS = [
 	{ value: "ORDER_DITERIMA", label: "Order Diterima" },
@@ -63,167 +77,103 @@ export function UpdateStatusModal({
 	}
 
 	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-			{/* Backdrop */}
-			<button
-				type="button"
-				className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm w-full cursor-default"
-				onClick={onClose}
-				aria-label="Tutup modal"
-			/>
+		<Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+			<DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+				<DialogHeader>
+					<DialogTitle>Update Status</DialogTitle>
+					<DialogDescription className="font-mono">
+						Order: {orderCode}
+					</DialogDescription>
+				</DialogHeader>
 
-			{/* Modal */}
-			<div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl shadow-slate-200/60 border border-slate-100 overflow-hidden max-h-[90vh] overflow-y-auto">
-				{/* Header */}
-				<div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 sticky top-0 bg-white z-10">
-					<div>
-						<h2 className="text-lg font-bold text-slate-900">Update Status</h2>
-						<p className="text-xs text-slate-500 mt-0.5 font-mono">
-							{orderCode}
-						</p>
-					</div>
-					<button
-						type="button"
-						onClick={onClose}
-						className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
-					>
-						<X size={18} />
-					</button>
-				</div>
-
-				{/* Form */}
-				<form onSubmit={handleSubmit} className="p-6 space-y-5">
-					{/* Status Select */}
-					<div>
-						<label
-							htmlFor="status"
-							className="block text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2"
-						>
-							Status Baru
-						</label>
+				<form onSubmit={handleSubmit} className="space-y-4 py-4">
+					<div className="space-y-2">
+						<Label htmlFor="status">Status Baru</Label>
 						<select
 							id="status"
 							required
 							value={status}
 							onChange={(e) => setStatus(e.target.value)}
-							className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all"
+							className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary dark:bg-input/20 dark:border-input dark:text-foreground transition-all appearance-none cursor-pointer"
 						>
 							{STATUS_OPTIONS.map((opt) => (
-								<option key={opt.value} value={opt.value}>
+								<option key={opt.value} value={opt.value} className="bg-background">
 									{opt.label}
 								</option>
 							))}
 						</select>
 					</div>
 
-					{/* Notes */}
-					<div>
-						<label
-							htmlFor="notes"
-							className="block text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2"
-						>
-							Catatan{" "}
-							<span className="normal-case font-normal text-slate-400">
-								(opsional)
-							</span>
-						</label>
-						<textarea
+					<div className="space-y-2">
+						<Label htmlFor="notes">Catatan <span className="text-muted-foreground font-normal">(opsional)</span></Label>
+						<Textarea
 							id="notes"
 							rows={2}
 							value={notes}
 							onChange={(e) => setNotes(e.target.value)}
-							placeholder="Tambahkan catatan untuk pelanggan..."
-							className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all resize-none"
+							placeholder="Tambahkan catatan internal atau untuk pelanggan..."
 						/>
 					</div>
 
-					{/* Pending Fields */}
 					{isPending_ && (
-						<div className="bg-orange-50 border border-orange-200 rounded-xl p-4 space-y-4">
-							<div className="flex items-center gap-2 text-orange-700">
+						<div className="bg-orange-50/50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900 rounded-2xl p-4 space-y-4 animate-in slide-in-from-top-1 duration-200">
+							<div className="flex items-center gap-2 text-orange-700 dark:text-orange-400">
 								<AlertTriangle size={16} />
-								<span className="text-xs font-semibold uppercase tracking-widest">
+								<span className="text-xs font-bold uppercase tracking-widest">
 									Detail Kendala Produksi
 								</span>
 							</div>
 
-							<div>
-								<label
-									htmlFor="issue_description"
-									className="block text-xs font-semibold text-orange-700 uppercase tracking-widest mb-2"
-								>
-									Kendala
-								</label>
-								<textarea
+							<div className="space-y-2">
+								<Label htmlFor="issue_description" className="text-orange-700 dark:text-orange-400">Kendala</Label>
+								<Textarea
 									id="issue_description"
 									required
 									rows={2}
 									value={issueDescription}
 									onChange={(e) => setIssueDescription(e.target.value)}
 									placeholder="Jelaskan kendala yang terjadi..."
-									className="w-full px-4 py-3 bg-white border border-orange-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 transition-all resize-none"
+									className="bg-white dark:bg-background border-orange-200 dark:border-orange-900 focus:ring-orange-400"
 								/>
 							</div>
 
-							<div>
-								<label
-									htmlFor="solution"
-									className="block text-xs font-semibold text-orange-700 uppercase tracking-widest mb-2"
-								>
-									Solusi
-								</label>
-								<textarea
+							<div className="space-y-2">
+								<Label htmlFor="solution" className="text-orange-700 dark:text-orange-400">Solusi</Label>
+								<Textarea
 									id="solution"
 									required
 									rows={2}
 									value={solution}
 									onChange={(e) => setSolution(e.target.value)}
 									placeholder="Tindakan yang akan diambil..."
-									className="w-full px-4 py-3 bg-white border border-orange-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 transition-all resize-none"
+									className="bg-white dark:bg-background border-orange-200 dark:border-orange-900 focus:ring-orange-400"
 								/>
 							</div>
 
-							<div>
-								<label
-									htmlFor="adjust_date"
-									className="block text-xs font-semibold text-orange-700 uppercase tracking-widest mb-2"
-								>
-									Estimasi Penyesuaian Selesai{" "}
-									<span className="normal-case font-normal text-orange-500">
-										(opsional)
-									</span>
-								</label>
-								<input
+							<div className="space-y-2">
+								<Label htmlFor="adjust_date" className="text-orange-700 dark:text-orange-400">Estimasi Penyesuaian Selesai</Label>
+								<Input
 									id="adjust_date"
 									type="date"
 									value={adjustDate}
 									onChange={(e) => setAdjustDate(e.target.value)}
 									min={new Date().toISOString().split("T")[0]}
-									className="w-full px-4 py-3 bg-white border border-orange-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 transition-all"
+									className="bg-white dark:bg-background border-orange-200 dark:border-orange-900 focus:ring-orange-400"
 								/>
 							</div>
 						</div>
 					)}
 
-					{/* Footer */}
-					<div className="flex gap-3 pt-2">
-						<button
-							type="button"
-							onClick={onClose}
-							className="flex-1 px-4 py-3 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer"
-						>
+					<DialogFooter className="pt-4">
+						<Button type="button" variant="outline" onClick={onClose} disabled={isPending}>
 							Batal
-						</button>
-						<button
-							type="submit"
-							disabled={isPending}
-							className="flex-1 px-4 py-3 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-						>
+						</Button>
+						<Button type="submit" disabled={isPending}>
 							{isPending ? "Menyimpan..." : "Update Status"}
-						</button>
-					</div>
+						</Button>
+					</DialogFooter>
 				</form>
-			</div>
-		</div>
+			</DialogContent>
+		</Dialog>
 	);
 }

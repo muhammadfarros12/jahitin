@@ -10,6 +10,8 @@
 		"with-env": "dotenv -e ../../.env --"
 	},
 	"dependencies": {
+		"@base-ui/react": "^1.3.0",
+		"@radix-ui/react-select": "^2.2.6",
 		"@tailwindcss/vite": "^4.1.18",
 		"@tanstack/react-devtools": "^0.7.0",
 		"@tanstack/react-query": "^5.90.21",
@@ -18,12 +20,16 @@
 		"@tanstack/react-router-ssr-query": "^1.131.7",
 		"@tanstack/react-start": "^1.132.0",
 		"@tanstack/router-plugin": "^1.132.0",
+		"class-variance-authority": "^0.7.1",
+		"clsx": "^2.1.1",
 		"dotenv": "^17.3.1",
 		"hono": "^4.11.9",
 		"lucide-react": "^0.545.0",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
 		"react-hot-toast": "^2.6.0",
+		"sonner": "^2.0.7",
+		"tailwind-merge": "^3.5.0",
 		"tailwindcss": "^4.1.18",
 		"vite-tsconfig-paths": "^5.1.4"
 	},
