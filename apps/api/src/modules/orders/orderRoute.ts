@@ -50,6 +50,41 @@ export const orderRouter = new Hono<{ Variables: { user: number } }>()
 			throw new HTTPException(400, { message: "Failed to fetch order data" });
 		}
 	})
+	.get("/orders/:id", async (c) => {
+		const id = Number(c.req.param("id"));
+
+		if (Number.isNaN(id)) {
+			throw new HTTPException(400, { message: "Invalid order ID" });
+		}
+
+		try {
+			const order = await prisma.order.findUnique({
+				where: { id },
+				include: {
+					status_updates: {
+						orderBy: {
+							created_at: "desc",
+						},
+					},
+					production_issue: {
+						where: {
+							is_resolved: false,
+						},
+					},
+				},
+			});
+
+			if (!order) {
+				throw new HTTPException(404, { message: "Order not found" });
+			}
+
+			return c.json({ success: true, data: order }, 200);
+		} catch (error) {
+			if (error instanceof HTTPException) throw error;
+			console.error(error);
+			throw new HTTPException(500, { message: "Failed to fetch order detail" });
+		}
+	})
 	.patch("/orders/:id", zValidator("json", updateOrderSchema), async (c) => {
 		const id = Number(c.req.param("id"));
 		const body = c.req.valid("json");
