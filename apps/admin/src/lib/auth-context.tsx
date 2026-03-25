@@ -26,13 +26,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 	useEffect(() => {
 		if (typeof window === "undefined") return;
-		const savedUser = localStorage.getItem("jahitin_user");
-		const savedToken = localStorage.getItem("token");
-		if (savedUser && savedToken) {
-			setUser(JSON.parse(savedUser));
-			setToken(savedToken);
-		}
-		setIsInitialized(true);
+
+		const verifySession = async () => {
+			const savedToken = localStorage.getItem("token");
+
+			if (!savedToken) {
+				setIsInitialized(true);
+				return;
+			}
+
+			try {
+				const res = await apiClient.api.user.profile.$get(
+					{},
+					{
+						headers: { Authorization: `Bearer ${savedToken}` },
+					},
+				);
+
+				if (res.ok) {
+					const data = (await res.json()) as any;
+					const u: User = {
+						id: data.id,
+						name: data.name,
+						email: data.email,
+					};
+					setUser(u);
+					setToken(savedToken);
+					localStorage.setItem("jahitin_user", JSON.stringify(u));
+				} else {
+					// Token invalid or expired
+					localStorage.removeItem("token");
+					localStorage.removeItem("jahitin_user");
+				}
+			} catch (error) {
+				console.error("Session verification failed:", error);
+				localStorage.removeItem("token");
+				localStorage.removeItem("jahitin_user");
+			} finally {
+				setIsInitialized(true);
+			}
+		};
+
+		verifySession();
 	}, []);
 
 	const login = async (email: string, password: string): Promise<boolean> => {

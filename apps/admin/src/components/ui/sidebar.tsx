@@ -70,9 +70,16 @@ export const Sidebar = React.forwardRef<
 		if (!openMobile) return null;
 		return (
 			<div className="fixed inset-0 z-50 flex">
-				<div
-					className="fixed inset-0 bg-black/40"
+				<button
+					type="button"
+					className="fixed inset-0 bg-black/40 border-none w-full h-full cursor-default"
 					onClick={() => setOpenMobile(false)}
+					onKeyDown={(e) => {
+						if (e.key === "Enter" || e.key === " ") {
+							setOpenMobile(false);
+						}
+					}}
+					aria-label="Close sidebar"
 				/>
 				<div
 					ref={ref}
@@ -198,13 +205,10 @@ export const SidebarMenuItem = React.forwardRef<
 SidebarMenuItem.displayName = "SidebarMenuItem";
 
 export const SidebarMenuButton = React.forwardRef<
-	HTMLElement,
-	{
+	HTMLButtonElement,
+	React.ButtonHTMLAttributes<HTMLButtonElement> & {
 		isActive?: boolean;
 		render?: React.ReactElement;
-		children?: React.ReactNode;
-		className?: string;
-		[key: string]: any;
 	}
 >(({ className, isActive, render: renderProp, children, ...props }, ref) => {
 	const baseClass = cn(
@@ -218,20 +222,18 @@ export const SidebarMenuButton = React.forwardRef<
 
 	if (renderProp) {
 		return React.cloneElement(renderProp, {
+			...props,
 			ref,
 			"data-active": isActive,
-			className: cn(baseClass, renderProp.props.className),
-			...props,
-		});
+			className: cn(
+				baseClass,
+				(renderProp.props as { className?: string }).className,
+			),
+		} as React.Attributes);
 	}
 
 	return (
-		<button
-			ref={ref as React.Ref<HTMLButtonElement>}
-			data-active={isActive}
-			className={baseClass}
-			{...props}
-		>
+		<button ref={ref} data-active={isActive} className={baseClass} {...props}>
 			{children}
 		</button>
 	);

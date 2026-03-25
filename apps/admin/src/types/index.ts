@@ -35,6 +35,7 @@ export interface OrderStatusUpdate {
 	notes: string | null;
 	created_at: string;
 	created_by: number | null;
+	user?: User | null;
 }
 
 export interface Order {
@@ -47,8 +48,9 @@ export interface Order {
 	created_at: string;
 	updated_at: string;
 	created_by: number | null;
+	createdBy?: User | null;
 	status_updates: OrderStatusUpdate[];
-	production_issue: ProductionIssue | null;
+	production_issue: (ProductionIssue & { resolver?: User | null }) | null;
 	// Aliases for UI compatibility with user's "original" code
 	active_production_issue?: ProductionIssue | null;
 	is_pending?: boolean;

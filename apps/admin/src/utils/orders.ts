@@ -1,11 +1,36 @@
 import type { Order } from "@/types";
 import { apiClient } from "@/utils/api";
 
-export async function fetchOrders(): Promise<Order[]> {
+export async function fetchOrders({
+	page = 1,
+	limit = 10,
+	search = "",
+	status = "ALL",
+	sortBy = "newest",
+}: {
+	page?: number;
+	limit?: number;
+	search?: string;
+	status?: string;
+	sortBy?: string;
+} = {}): Promise<{
+	data: Order[];
+	total: number;
+	page: number;
+	limit: number;
+}> {
 	const token = localStorage.getItem("token");
 
 	const res = await apiClient.api.orders.$get(
-		{},
+		{
+			query: {
+				page: String(page),
+				limit: String(limit),
+				search,
+				status,
+				sortBy,
+			},
+		},
 		{
 			headers: {
 				Authorization: `Bearer ${token}`,
@@ -20,7 +45,43 @@ export async function fetchOrders(): Promise<Order[]> {
 		throw new Error("Failed to fetch orders");
 	}
 
-	const json = await res.json();
-	// @ts-expect-error - response has data property
-	return json.data as Order[];
+	const json = (await res.json()) as {
+		data: Order[];
+		total: number;
+		page: number;
+		limit: number;
+	};
+	return json;
+}
+
+export async function fetchOrderStats(): Promise<{
+	total: number;
+	production: number;
+	pending: number;
+	completed: number;
+}> {
+	const token = localStorage.getItem("token");
+
+	const res = await apiClient.api.orders.stats.$get(
+		{},
+		{
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		},
+	);
+
+	if (!res.ok) {
+		throw new Error("Failed to fetch order stats");
+	}
+
+	const json = (await res.json()) as {
+		data: {
+			total: number;
+			production: number;
+			pending: number;
+			completed: number;
+		};
+	};
+	return json.data;
 }

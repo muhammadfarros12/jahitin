@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import {
 	Sheet,
 	SheetContent,
+	SheetDescription,
 	SheetHeader,
 	SheetTitle,
 } from "@/components/ui/sheet";
@@ -205,27 +206,47 @@ export function AdminLayout() {
 			</div>
 
 			<Sheet open={showPasswordSheet} onOpenChange={setShowPasswordSheet}>
-				<SheetContent side="right">
-					<SheetHeader>
-						<SheetTitle>Ubah Password</SheetTitle>
+				<SheetContent
+					side="right"
+					className="w-full sm:max-w-md p-0 flex flex-col h-full"
+				>
+					<SheetHeader className="text-left border-b border-border p-8 pb-6 shrink-0">
+						<SheetTitle className="text-2xl">Ubah Password</SheetTitle>
+						<SheetDescription className="text-sm">
+							Amankan akun Anda dengan mengganti password secara berkala.
+						</SheetDescription>
 					</SheetHeader>
-					<div className="grid gap-4 py-6">
+
+					<div className="flex-1 overflow-y-auto p-8 space-y-6">
 						<div className="grid gap-2">
-							<Label>Password Lama</Label>
-							<Input type="password" />
+							<Label className="text-xs uppercase tracking-widest font-bold text-muted-foreground">
+								Password Lama
+							</Label>
+							<Input
+								type="password"
+								className="bg-card border-border h-11 focus-visible:ring-primary/20"
+							/>
 						</div>
 						<div className="grid gap-2">
-							<Label>Password Baru</Label>
-							<Input type="password" />
+							<Label className="text-xs uppercase tracking-widest font-bold text-muted-foreground">
+								Password Baru
+							</Label>
+							<Input
+								type="password"
+								className="bg-card border-border h-11 focus-visible:ring-primary/20"
+							/>
 						</div>
+					</div>
+
+					<div className="px-8 py-6 border-t border-border shrink-0">
 						<Button
-							className="mt-4"
+							className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl shadow-md"
 							onClick={() => {
 								toast.success("Password diubah (simulasi)");
 								setShowPasswordSheet(false);
 							}}
 						>
-							Simpan
+							Simpan Perubahan
 						</Button>
 					</div>
 				</SheetContent>

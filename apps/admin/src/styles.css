@@ -128,119 +128,84 @@
 }
 
 @layer utilities {
+	/* Status Badges - Restored vibrant colors */
 	.badge-status-order-diterima {
 		background-color: oklch(0.93 0.04 258);
 		color: oklch(0.42 0.17 258);
+		@apply border-none px-2 py-0.5 font-medium dark:bg-blue-500/20 dark:text-blue-400;
 	}
 	.badge-status-approval-sample {
 		background-color: oklch(0.93 0.04 295);
 		color: oklch(0.42 0.17 295);
+		@apply border-none px-2 py-0.5 font-medium dark:bg-purple-500/20 dark:text-purple-400;
 	}
 	.badge-status-menunggu-antrian {
 		background-color: oklch(0.96 0.1 80);
 		color: oklch(0.48 0.14 75);
+		@apply border-none px-2 py-0.5 font-medium dark:bg-amber-500/20 dark:text-amber-400;
 	}
 	.badge-status-produksi-berjalan {
 		background-color: oklch(0.95 0.08 48);
 		color: oklch(0.48 0.14 48);
+		@apply border-none px-2 py-0.5 font-medium dark:bg-orange-500/20 dark:text-orange-400;
 	}
 	.badge-status-pending {
 		background-color: oklch(0.95 0.05 25);
-		color: oklch(0.48 0.18 25);
+		color: var(--stat-danger);
+		@apply border-none px-2 py-0.5 font-medium dark:bg-red-500/20 dark:text-red-400;
 	}
 	.badge-status-quality-check {
 		background-color: oklch(0.93 0.05 208);
 		color: oklch(0.42 0.12 208);
+		@apply border-none px-2 py-0.5 font-medium dark:bg-sky-500/20 dark:text-sky-400;
 	}
 	.badge-status-siap-diambil {
 		background-color: oklch(0.93 0.07 165);
 		color: oklch(0.42 0.14 165);
+		@apply border-none px-2 py-0.5 font-medium dark:bg-emerald-500/20 dark:text-emerald-400;
 	}
 	.badge-status-order-selesai {
 		background-color: oklch(0.93 0.08 165 / 0.8);
 		color: oklch(0.25 0.12 165);
+		@apply border-none px-2 py-0.5 font-medium dark:bg-green-500/20 dark:text-green-400;
 	}
 
-	:is(.dark *) .badge-status-order-diterima {
-		background-color: oklch(0.3 0.08 258 / 0.4);
-		color: oklch(0.72 0.12 258);
+	/* History Cards */
+	.pending-history-card {
+		@apply bg-red-50/50 dark:bg-red-950/20 p-4 rounded-md mt-2 border border-red-100 dark:border-red-900/30;
 	}
-	:is(.dark *) .badge-status-approval-sample {
-		background-color: oklch(0.3 0.09 295 / 0.4);
-		color: oklch(0.72 0.13 295);
-	}
-	:is(.dark *) .badge-status-menunggu-antrian {
-		background-color: oklch(0.32 0.08 80 / 0.4);
-		color: oklch(0.8 0.13 80);
-	}
-	:is(.dark *) .badge-status-produksi-berjalan {
-		background-color: oklch(0.32 0.08 48 / 0.4);
-		color: oklch(0.78 0.13 48);
-	}
-	:is(.dark *) .badge-status-pending {
-		background-color: oklch(0.3 0.08 25 / 0.4);
-		color: oklch(0.72 0.15 25);
-	}
-	:is(.dark *) .badge-status-quality-check {
-		background-color: oklch(0.3 0.07 208 / 0.4);
-		color: oklch(0.72 0.1 208);
-	}
-	:is(.dark *) .badge-status-siap-diambil {
-		background-color: oklch(0.3 0.08 165 / 0.4);
-		color: oklch(0.72 0.12 165);
-	}
-	:is(.dark *) .badge-status-order-selesai {
-		background-color: oklch(0.35 0.12 165 / 0.3);
-		color: oklch(0.75 0.15 165);
+	.success-history-card {
+		@apply bg-emerald-50/50 dark:bg-emerald-950/20 p-4 rounded-md mt-2 border border-emerald-100 dark:border-emerald-900/30;
 	}
 
+	/* Timeline Dots */
 	.timeline-dot-status-order-diterima {
-		background-color: oklch(0.42 0.17 258);
+		@apply bg-blue-500 dark:bg-blue-400;
 	}
 	.timeline-dot-status-approval-sample {
-		background-color: oklch(0.42 0.17 295);
+		@apply bg-purple-500 dark:bg-purple-400;
 	}
 	.timeline-dot-status-menunggu-antrian {
-		background-color: oklch(0.48 0.14 75);
+		@apply bg-amber-500 dark:bg-amber-400;
 	}
 	.timeline-dot-status-produksi-berjalan {
-		background-color: oklch(0.48 0.14 48);
+		@apply bg-orange-500 dark:bg-orange-400;
 	}
 	.timeline-dot-status-pending {
-		background-color: oklch(0.48 0.18 25);
+		@apply bg-red-500 dark:bg-red-400;
 	}
 	.timeline-dot-status-quality-check {
-		background-color: oklch(0.42 0.12 208);
+		@apply bg-sky-500 dark:bg-sky-400;
 	}
 	.timeline-dot-status-siap-diambil {
-		background-color: oklch(0.42 0.14 165);
+		@apply bg-emerald-500 dark:bg-emerald-400;
 	}
 	.timeline-dot-status-order-selesai {
-		background-color: oklch(0.25 0.12 165);
+		@apply bg-green-500 dark:bg-green-400;
 	}
 
-	:is(.dark *) .timeline-dot-status-order-diterima {
-		background-color: oklch(0.72 0.12 258);
-	}
-	:is(.dark *) .timeline-dot-status-approval-sample {
-		background-color: oklch(0.72 0.13 295);
-	}
-	:is(.dark *) .timeline-dot-status-menunggu-antrian {
-		background-color: oklch(0.8 0.13 80);
-	}
-	:is(.dark *) .timeline-dot-status-produksi-berjalan {
-		background-color: oklch(0.78 0.13 48);
-	}
-	:is(.dark *) .timeline-dot-status-pending {
-		background-color: oklch(0.72 0.15 25);
-	}
-	:is(.dark *) .timeline-dot-status-quality-check {
-		background-color: oklch(0.72 0.1 208);
-	}
-	:is(.dark *) .timeline-dot-status-siap-diambil {
-		background-color: oklch(0.72 0.12 165);
-	}
-	:is(.dark *) .timeline-dot-status-order-selesai {
-		background-color: oklch(0.75 0.15 165);
+	/* Semantic Colors */
+	.stat-success-content {
+		color: var(--stat-success);
 	}
 }
