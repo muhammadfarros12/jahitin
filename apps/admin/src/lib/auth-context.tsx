@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 				);
 
 				if (res.ok) {
-					const data = (await res.json()) as any;
+					const data = (await res.json()) as User;
 					const u: User = {
 						id: data.id,
 						name: data.name,

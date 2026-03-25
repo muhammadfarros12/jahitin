@@ -22,6 +22,7 @@ const config = defineConfig({
 		tanstackStart(),
 		viteReact(),
 	],
+	envDir: "../../",
 });
 
 export default config;

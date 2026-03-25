@@ -243,7 +243,7 @@ function DashboardPage() {
 					jsonBody.estimated_finished_date = formDate;
 				}
 
-				const res = await (apiClient.api.orders as any)[":id"].$patch(
+				const res = await apiClient.api.orders[":id"].$patch(
 					{
 						param: { id: editOrder.id.toString() },
 						json: jsonBody,
@@ -276,7 +276,7 @@ function DashboardPage() {
 
 	const { mutate: deleteOrder, isPending: isDeleting } = useMutation({
 		mutationFn: async (id: number) => {
-			const res = await (apiClient.api.orders as any)[":id"].$delete(
+			const res = await apiClient.api.orders[":id"].$delete(
 				{ param: { id: String(id) } },
 				{ headers: { Authorization: `Bearer ${token}` } },
 			);
@@ -341,9 +341,22 @@ function DashboardPage() {
 					body.adjust_finished_date = issueAdjDate;
 				}
 			}
-			const res = await (apiClient.api.orders as any)[":id"][
-				"status-updates"
-			].$post(
+
+			// 1. Buat definisi tipe sementara khusus untuk endpoint ini
+			type StatusUpdateRoute = {
+				"status-updates": {
+					$post: (
+						req: { param: { id: string }; json: typeof body },
+						opts: { headers: { Authorization: string } },
+					) => Promise<Response>;
+				};
+			};
+
+			// 2. Lakukan casting yang aman (melewati unknown terlebih dahulu)
+			const orderRoute = apiClient.api.orders[
+				":id"
+			] as unknown as StatusUpdateRoute;
+			const res = await orderRoute["status-updates"].$post(
 				{ param: { id: String(updatingOrder.id) }, json: body },
 				{ headers: { Authorization: `Bearer ${token}` } },
 			);
@@ -390,7 +403,7 @@ function DashboardPage() {
 			{/* Statistical Overview */}
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 				{/* Total Order */}
-				<Card className="relative overflow-hidden border border-border bg-card shadow-none h-[120px]">
+				<Card className="relative overflow-hidden border border-border bg-card shadow-none h-30">
 					<CardContent className="p-5 h-full flex flex-col">
 						<p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">
 							Total Order
@@ -413,7 +426,7 @@ function DashboardPage() {
 				</Card>
 
 				{/* Dalam Produksi */}
-				<Card className="relative overflow-hidden border border-border bg-card shadow-none h-[120px]">
+				<Card className="relative overflow-hidden border border-border bg-card shadow-none h-30">
 					<CardContent className="p-5 h-full flex flex-col">
 						<p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">
 							Dalam Produksi
@@ -436,7 +449,7 @@ function DashboardPage() {
 				</Card>
 
 				{/* Pending */}
-				<Card className="relative overflow-hidden border border-border bg-card shadow-none h-[120px]">
+				<Card className="relative overflow-hidden border border-border bg-card shadow-none h-30">
 					<CardContent className="p-5 h-full flex flex-col">
 						<p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">
 							Pending
@@ -459,7 +472,7 @@ function DashboardPage() {
 				</Card>
 
 				{/* Selesai */}
-				<Card className="relative overflow-hidden border border-border bg-card shadow-none h-[120px]">
+				<Card className="relative overflow-hidden border border-border bg-card shadow-none h-30">
 					<CardContent className="p-5 h-full flex flex-col">
 						<p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">
 							Selesai
@@ -487,7 +500,7 @@ function DashboardPage() {
 					<div className="flex flex-col lg:flex-row flex-1 lg:items-center gap-4 w-full">
 						{/* Container for Dropdowns - Full width on mobile/tablet, auto on desktop */}
 						<div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 w-full lg:w-auto">
-							<div className="flex-1 md:flex-1 lg:w-[200px] lg:flex-none">
+							<div className="flex-1 md:flex-1 lg:w-50 lg:flex-none">
 								<Select value={sortBy} onValueChange={setSortBy}>
 									<SelectTrigger className="w-full h-10 border-border bg-card">
 										<SelectValue placeholder="Urutkan Berdasarkan" />
@@ -504,7 +517,7 @@ function DashboardPage() {
 								</Select>
 							</div>
 
-							<div className="flex-1 md:flex-1 lg:w-[160px] lg:flex-none">
+							<div className="flex-1 md:flex-1 lg:w-40 lg:flex-none">
 								<Select value={statusFilter} onValueChange={setStatusFilter}>
 									<SelectTrigger className="w-full h-10 border-border bg-card">
 										<SelectValue placeholder="Filter Status" />
@@ -553,9 +566,9 @@ function DashboardPage() {
 					<Table>
 						<TableHeader className="bg-card">
 							<TableRow>
-								<TableHead className="w-[180px] px-6">Kode Order</TableHead>
+								<TableHead className="w-45 px-6">Kode Order</TableHead>
 								<TableHead className="px-6">Customer</TableHead>
-								<TableHead className="max-w-[200px] px-6">Deskripsi</TableHead>
+								<TableHead className="max-w-50 px-6">Deskripsi</TableHead>
 								<TableHead className="px-6">Status</TableHead>
 								<TableHead className="px-6">Estimasi Selesai</TableHead>
 								<TableHead className="text-right px-6">Aksi</TableHead>
@@ -577,7 +590,7 @@ function DashboardPage() {
 										<TableCell className="font-medium text-foreground px-6">
 											{order.customer_name}
 										</TableCell>
-										<TableCell className="max-w-[200px] truncate text-muted-foreground px-6">
+										<TableCell className="max-w-50 truncate text-muted-foreground px-6">
 											{order.order_description}
 										</TableCell>
 										<TableCell className="px-6">
@@ -653,9 +666,8 @@ function DashboardPage() {
 													</DropdownMenuItem>
 													<DropdownMenuItem
 														onClick={() => {
-															const platformUrl =
-																import.meta.env.VITE_PLATFORM_URL ||
-																"http://localhost:3000";
+															const platformUrl = import.meta.env
+																.VITE_PLATFORM_URL;
 															const shareUrl = `${platformUrl}/track/${order.order_code}`;
 															navigator.clipboard.writeText(shareUrl);
 															toast.success(
@@ -680,7 +692,7 @@ function DashboardPage() {
 								))
 							) : (
 								<TableRow>
-									<TableCell colSpan={6} className="h-[450px] text-center">
+									<TableCell colSpan={6} className="h-112.5 text-center">
 										<div className="flex flex-col items-center justify-center space-y-4 max-w-[320px] mx-auto">
 											<div className="h-20 w-20 rounded-full bg-muted flex items-center justify-center">
 												{isLoading ? (
@@ -842,7 +854,7 @@ function DashboardPage() {
 							</Label>
 							<Textarea
 								id="desc"
-								className="bg-card border-border min-h-[120px] focus-visible:ring-primary/20"
+								className="bg-card border-border min-h-30 focus-visible:ring-primary/20"
 								placeholder="Jenis, bahan, warna, ukuran, jumlah..."
 								value={formDesc}
 								onChange={(e) => setFormDesc(e.target.value)}
@@ -1028,7 +1040,7 @@ function DashboardPage() {
 									<h3 className="font-bold text-sm text-muted-foreground uppercase tracking-widest">
 										Riwayat Status
 									</h3>
-									<div className="space-y-6 relative before:absolute before:left-5 before:top-0 before:bottom-0 before:-translate-x-px before:w-[1px] before:bg-border">
+									<div className="space-y-6 relative before:absolute before:left-5 before:top-0 before:bottom-0 before:-translate-x-px before:w-px before:bg-border">
 										{(selectedOrderDetails.status_updates ?? []).length > 0 ? (
 											selectedOrderDetails.status_updates?.map((item, idx) => (
 												<div
@@ -1357,7 +1369,7 @@ function DashboardPage() {
 											<Textarea
 												placeholder="Sebutkan kendala yang terjadi..."
 												className={cn(
-													"bg-white dark:bg-card shadow-none rounded-md min-h-[80px] transition-colors",
+													"bg-white dark:bg-card shadow-none rounded-md min-h-20 transition-colors",
 													issueIsResolved
 														? "border-stat-success/20 dark:border-stat-success/30 focus-visible:ring-stat-success/20"
 														: "border-stat-danger/20 dark:border-stat-danger/30 focus-visible:ring-stat-danger/20",
@@ -1380,7 +1392,7 @@ function DashboardPage() {
 											<Textarea
 												placeholder="Tindakan yang akan atau sedang diambil..."
 												className={cn(
-													"bg-white dark:bg-card shadow-none rounded-xl min-h-[80px] transition-colors",
+													"bg-white dark:bg-card shadow-none rounded-xl min-h-20 transition-colors",
 													issueIsResolved
 														? "border-stat-success/20 dark:border-stat-success/30 focus-visible:ring-stat-success/20"
 														: "border-stat-danger/20 dark:border-stat-danger/30 focus-visible:ring-stat-danger/20",
@@ -1421,7 +1433,7 @@ function DashboardPage() {
 									</Label>
 									<Textarea
 										placeholder="Misal: Mulai potong bahan, Sudah dikirim, dll"
-										className="border-border bg-card rounded-md shadow-none min-h-[100px] focus-visible:ring-primary/20"
+										className="border-border bg-card rounded-md shadow-none min-h-25 focus-visible:ring-primary/20"
 										value={statusNotes}
 										onChange={(e) => setStatusNotes(e.target.value)}
 									/>
