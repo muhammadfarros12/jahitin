@@ -1,23 +1,22 @@
-"use client"
+"use client";
 import { AlertTriangle } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
 	type UpdateStatusInput,
 	useUpdateStatus,
 } from "@/modules/orders/hooks/useUpdateStatus";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogDescription,
-  DialogFooter
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
 
 const STATUS_OPTIONS = [
 	{ value: "ORDER_DITERIMA", label: "Order Diterima" },
@@ -97,7 +96,11 @@ export function UpdateStatusModal({
 							className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary dark:bg-input/20 dark:border-input dark:text-foreground transition-all appearance-none cursor-pointer"
 						>
 							{STATUS_OPTIONS.map((opt) => (
-								<option key={opt.value} value={opt.value} className="bg-background">
+								<option
+									key={opt.value}
+									value={opt.value}
+									className="bg-background"
+								>
 									{opt.label}
 								</option>
 							))}
@@ -105,7 +108,12 @@ export function UpdateStatusModal({
 					</div>
 
 					<div className="space-y-2">
-						<Label htmlFor="notes">Catatan <span className="text-muted-foreground font-normal">(opsional)</span></Label>
+						<Label htmlFor="notes">
+							Catatan{" "}
+							<span className="text-muted-foreground font-normal">
+								(opsional)
+							</span>
+						</Label>
 						<Textarea
 							id="notes"
 							rows={2}
@@ -125,7 +133,12 @@ export function UpdateStatusModal({
 							</div>
 
 							<div className="space-y-2">
-								<Label htmlFor="issue_description" className="text-orange-700 dark:text-orange-400">Kendala</Label>
+								<Label
+									htmlFor="issue_description"
+									className="text-orange-700 dark:text-orange-400"
+								>
+									Kendala
+								</Label>
 								<Textarea
 									id="issue_description"
 									required
@@ -138,7 +151,12 @@ export function UpdateStatusModal({
 							</div>
 
 							<div className="space-y-2">
-								<Label htmlFor="solution" className="text-orange-700 dark:text-orange-400">Solusi</Label>
+								<Label
+									htmlFor="solution"
+									className="text-orange-700 dark:text-orange-400"
+								>
+									Solusi
+								</Label>
 								<Textarea
 									id="solution"
 									required
@@ -151,7 +169,12 @@ export function UpdateStatusModal({
 							</div>
 
 							<div className="space-y-2">
-								<Label htmlFor="adjust_date" className="text-orange-700 dark:text-orange-400">Estimasi Penyesuaian Selesai</Label>
+								<Label
+									htmlFor="adjust_date"
+									className="text-orange-700 dark:text-orange-400"
+								>
+									Estimasi Penyesuaian Selesai
+								</Label>
 								<Input
 									id="adjust_date"
 									type="date"
@@ -165,7 +188,12 @@ export function UpdateStatusModal({
 					)}
 
 					<DialogFooter className="pt-4">
-						<Button type="button" variant="outline" onClick={onClose} disabled={isPending}>
+						<Button
+							type="button"
+							variant="outline"
+							onClick={onClose}
+							disabled={isPending}
+						>
 							Batal
 						</Button>
 						<Button type="submit" disabled={isPending}>

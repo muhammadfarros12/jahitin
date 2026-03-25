@@ -25,7 +25,7 @@ export const Route = createRootRoute({
 				rel: "stylesheet",
 				href: appCss,
 			},
-            {
+			{
 				rel: "preconnect",
 				href: "https://fonts.googleapis.com",
 			},
@@ -34,7 +34,7 @@ export const Route = createRootRoute({
 				href: "https://fonts.gstatic.com",
 				crossOrigin: "anonymous",
 			},
-            {
+			{
 				rel: "stylesheet",
 				href: "https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Merriweather:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap",
 			},
@@ -51,9 +51,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body>
 				<QueryClientProvider client={queryClient}>
-                    <AuthProvider>
-					    {children}
-                    </AuthProvider>
+					<AuthProvider>{children}</AuthProvider>
 					<Toaster richColors position="top-right" />
 				</QueryClientProvider>
 				<Scripts />
