@@ -15,6 +15,7 @@ interface AuthContextType {
 	login: (email: string, password: string) => Promise<boolean>;
 	logout: () => void;
 	isAuthenticated: boolean;
+	isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,7 +23,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
 	const [user, setUser] = useState<User | null>(null);
 	const [token, setToken] = useState<string | null>(null);
-	const [isInitialized, setIsInitialized] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
 		if (typeof window === "undefined") return;
@@ -31,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			const savedToken = localStorage.getItem("token");
 
 			if (!savedToken) {
-				setIsInitialized(true);
+				setIsLoading(false);
 				return;
 			}
 
@@ -54,7 +55,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 					setToken(savedToken);
 					localStorage.setItem("jahitin_user", JSON.stringify(u));
 				} else {
-					// Token invalid or expired
 					localStorage.removeItem("token");
 					localStorage.removeItem("jahitin_user");
 				}
@@ -63,7 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 				localStorage.removeItem("token");
 				localStorage.removeItem("jahitin_user");
 			} finally {
-				setIsInitialized(true);
+				setIsLoading(false);
 			}
 		};
 
@@ -104,13 +104,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 	return (
 		<AuthContext.Provider
-			value={{ user, token, login, logout, isAuthenticated: !!user }}
+			value={{ user, token, login, logout, isAuthenticated: !!user, isLoading }}
 		>
-			{isInitialized ? (
-				children
-			) : (
-				<div className="min-h-screen bg-background" />
-			)}
+			{children}
 		</AuthContext.Provider>
 	);
 }

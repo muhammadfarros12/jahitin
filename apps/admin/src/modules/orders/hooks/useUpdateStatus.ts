@@ -45,7 +45,17 @@ export const useUpdateStatus = (onSuccess?: () => void) => {
 				},
 				{ headers: { Authorization: `Bearer ${token}` } },
 			);
-			if (!res.ok) throw new Error("Gagal update status");
+
+			if (!res.ok) {
+				const text = await res.text();
+				try {
+					const errorData = JSON.parse(text);
+					throw new Error(errorData.message || "Gagal update status");
+				} catch {
+					throw new Error("Gagal update status");
+				}
+			}
+
 			return res.json();
 		},
 		onSuccess: () => {
@@ -53,8 +63,8 @@ export const useUpdateStatus = (onSuccess?: () => void) => {
 			toast.success("Status berhasil diperbarui");
 			onSuccess?.();
 		},
-		onError: () => {
-			toast.error("Gagal memperbarui status");
+		onError: (error: Error) => {
+			toast.error(error.message || "Gagal memperbarui status");
 		},
 	});
 };

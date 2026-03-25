@@ -17,6 +17,7 @@ import {
 	type UpdateStatusInput,
 	useUpdateStatus,
 } from "@/modules/orders/hooks/useUpdateStatus";
+import type { OrderStatus } from "@/types";
 
 const STATUS_OPTIONS = [
 	{ value: "ORDER_DITERIMA", label: "Order Diterima" },
@@ -67,7 +68,7 @@ export function UpdateStatusModal({
 			};
 		} else {
 			input = {
-				status: status as UpdateStatusInput["status"],
+				status: status as Exclude<OrderStatus, "PENDING">,
 				notes: notes || undefined,
 			};
 		}

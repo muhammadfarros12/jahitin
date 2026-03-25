@@ -1,11 +1,6 @@
 import { z } from "zod";
 import { OrderStatus } from "../../generated/prisma/enums";
 
-const _baseDateSchema = z
-	.string()
-	.regex(/^\d{4}-\d{2}-\d{2}$/, "Format must be YYYY-MM-DD")
-	.transform((val) => new Date(`${val}T00:00:00.000Z`));
-
 // Base schema untuk update status, yang akan digunakan untuk semua status update
 const baseStatusUpdateSchema = z.object({
 	notes: z.string().min(1, "Notes cannot be empty").optional(),

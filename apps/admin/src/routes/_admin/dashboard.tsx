@@ -294,6 +294,36 @@ function DashboardPage() {
 	const { mutate: updateStatus, isPending: isUpdating } = useMutation({
 		mutationFn: async () => {
 			if (!updatingOrder) return;
+
+			// If resolving a pending issue, use the resolve issue endpoint
+			if (
+				updatingOrder.current_status === "PENDING" &&
+				issueIsResolved &&
+				!newStatus
+			) {
+				const res = await apiClient.api.orders[":id"].issue.$patch(
+					{
+						param: { id: String(updatingOrder.id) },
+						json: {
+							solution: issueSolution || "Selesai",
+							is_resolved: true,
+						},
+					},
+					{ headers: { Authorization: `Bearer ${token}` } },
+				);
+				if (!res.ok) {
+					const text = await res.text();
+					try {
+						const errorData = JSON.parse(text);
+						throw new Error(errorData.message || "Gagal menyelesaikan kendala");
+					} catch {
+						throw new Error("Gagal menyelesaikan kendala");
+					}
+				}
+				return res.json();
+			}
+
+			// Otherwise, use the status-updates endpoint
 			const status = newStatus ?? updatingOrder.current_status;
 			const body: {
 				status: string;
@@ -317,7 +347,16 @@ function DashboardPage() {
 				{ param: { id: String(updatingOrder.id) }, json: body },
 				{ headers: { Authorization: `Bearer ${token}` } },
 			);
-			if (!res.ok) throw new Error("Gagal update status");
+			if (!res.ok) {
+				const text = await res.text();
+				try {
+					const errorData = JSON.parse(text);
+					throw new Error(errorData.message || "Gagal update status");
+				} catch {
+					throw new Error("Gagal update status");
+				}
+			}
+			return res.json();
 		},
 		onSuccess: () => {
 			toast.success("Status berhasil diperbarui");
@@ -332,7 +371,9 @@ function DashboardPage() {
 			setIssueAdjDate("");
 			setIssueIsResolved(false);
 		},
-		onError: () => toast.error("Gagal memperbarui status"),
+		onError: (error: Error) => {
+			toast.error(error.message || "Gagal memperbarui status");
+		},
 	});
 
 	const openEdit = (order: Order) => {

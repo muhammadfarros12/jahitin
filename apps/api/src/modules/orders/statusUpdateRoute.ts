@@ -31,6 +31,19 @@ export const statusUpdateRouter = new Hono<{
 					throw new HTTPException(404, { message: "Order not found" });
 				}
 
+				const unresolvedIssue = await prisma.productionIssue.findFirst({
+					where: {
+						order_id: Number(orderId),
+						is_resolved: false,
+					},
+				});
+
+				if (unresolvedIssue) {
+					throw new HTTPException(400, {
+						message: "Order masih memiliki pending yang harus diselesaikan",
+					});
+				}
+
 				if (body.status === OrderStatus.PENDING) {
 					const result = await prisma.$transaction(
 						async (transactionClient) => {

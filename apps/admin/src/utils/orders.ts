@@ -46,12 +46,18 @@ export async function fetchOrders({
 	}
 
 	const json = (await res.json()) as {
+		success: boolean;
 		data: Order[];
 		total: number;
 		page: number;
 		limit: number;
 	};
-	return json;
+	return {
+		data: json.data,
+		total: json.total,
+		page: json.page,
+		limit: json.limit,
+	};
 }
 
 export async function fetchOrderStats(): Promise<{

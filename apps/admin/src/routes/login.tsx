@@ -1,10 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Lock, Mail, Moon, Scissors, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { useAuth } from "@/lib/auth-context";
 import { useLogin } from "@/modules/auth/hooks/useLogin";
 
 export const Route = createFileRoute("/login")({
@@ -12,11 +13,19 @@ export const Route = createFileRoute("/login")({
 });
 
 function RouteComponent() {
+	const { isLoading, isAuthenticated } = useAuth();
+	const navigate = useNavigate();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [isDarkMode, setIsDarkMode] = useState(false);
 
 	const { mutate: submitLogin, isPending } = useLogin();
+
+	useEffect(() => {
+		if (!isLoading && isAuthenticated) {
+			navigate({ to: "/dashboard" });
+		}
+	}, [isLoading, isAuthenticated, navigate]);
 
 	useEffect(() => {
 		const savedTheme = localStorage.getItem("theme");
@@ -32,6 +41,21 @@ function RouteComponent() {
 	function handleSubmitLogin(event: React.FormEvent) {
 		event.preventDefault();
 		submitLogin({ email, password });
+	}
+
+	if (isLoading) {
+		return (
+			<div className="min-h-screen bg-background flex items-center justify-center">
+				<div className="flex flex-col items-center gap-4">
+					<div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+					<span className="text-sm text-muted-foreground">Memuat...</span>
+				</div>
+			</div>
+		);
+	}
+
+	if (isAuthenticated) {
+		return null;
 	}
 
 	return (
