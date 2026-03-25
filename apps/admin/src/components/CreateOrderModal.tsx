@@ -1,18 +1,18 @@
-"use client"
+"use client";
 import { useState } from "react";
-import { useCreateOrder } from "@/modules/orders/hooks/useCreateOrder";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogDescription,
-  DialogFooter
-} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useCreateOrder } from "@/modules/orders/hooks/useCreateOrder";
 
 interface Props {
 	onClose: () => void;

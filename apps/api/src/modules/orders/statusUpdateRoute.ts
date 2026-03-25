@@ -52,14 +52,34 @@ export const statusUpdateRouter = new Hono<{
 								},
 							});
 
+							const isResolved = body.is_resolved === true;
+
 							const productionIssue =
-								await transactionClient.productionIssue.create({
-									data: {
+								await transactionClient.productionIssue.upsert({
+									where: { order_id: Number(orderId) },
+									update: {
+										previous_status: existingOrder.current_status,
+										issue_description: body.issue_description || "",
+										solution: body.solution || "",
+										adjust_finished_date: body.adjust_finished_date
+											? new Date(body.adjust_finished_date)
+											: null,
+										is_resolved: isResolved,
+										resolved_at: isResolved ? new Date() : null,
+										resolved_by: isResolved ? userId : null,
+										updated_at: new Date(),
+									},
+									create: {
 										order_id: Number(orderId),
 										previous_status: existingOrder.current_status,
-										issue_description: body.issue_description,
-										solution: body.solution,
-										adjust_finished_date: body.adjust_finished_date,
+										issue_description: body.issue_description || "",
+										solution: body.solution || "",
+										adjust_finished_date: body.adjust_finished_date
+											? new Date(body.adjust_finished_date)
+											: null,
+										is_resolved: isResolved,
+										resolved_at: isResolved ? new Date() : null,
+										resolved_by: isResolved ? userId : null,
 									},
 								});
 

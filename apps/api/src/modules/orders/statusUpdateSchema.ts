@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { OrderStatus } from "../../generated/prisma/enums";
 
-const baseDateSchema = z
+const _baseDateSchema = z
 	.string()
 	.regex(/^\d{4}-\d{2}-\d{2}$/, "Format must be YYYY-MM-DD")
 	.transform((val) => new Date(`${val}T00:00:00.000Z`));
@@ -16,7 +16,8 @@ const pendingStatusSchema = baseStatusUpdateSchema.extend({
 	status: z.literal("PENDING"),
 	issue_description: z.string().min(1, "Issue description cannot be empty"),
 	solution: z.string().min(1, "Solution cannot be empty"),
-	adjust_finished_date: baseDateSchema.optional(),
+	adjust_finished_date: z.string().optional(),
+	is_resolved: z.boolean().optional(),
 });
 
 // jika statusnya selain PENDING, maka tidak boleh ada issue_description, solution, dan adjust_finished_date
