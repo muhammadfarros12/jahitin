@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import {
 	Sheet,
 	SheetContent,
+	SheetDescription,
 	SheetHeader,
 	SheetTitle,
 } from "@/components/ui/sheet";
@@ -43,8 +44,8 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/lib/auth-context";
 
-export function AdminLayout() {
-	const { user, logout } = useAuth();
+export function AdminLayout({ children }: { children?: React.ReactNode }) {
+	const { user, logout, isLoading, isAuthenticated } = useAuth();
 	const location = useLocation();
 	const navigate = useNavigate();
 	const [isDarkMode, setIsDarkMode] = useState(false);
@@ -55,6 +56,12 @@ export function AdminLayout() {
 			typeof window !== "undefined" ? localStorage.getItem("theme") : null;
 		if (saved === "dark") setIsDarkMode(true);
 	}, []);
+
+	useEffect(() => {
+		if (!isLoading && !isAuthenticated && location.pathname !== "/login") {
+			navigate({ to: "/login" });
+		}
+	}, [isLoading, isAuthenticated, navigate, location.pathname]);
 
 	useEffect(() => {
 		if (isDarkMode) {
@@ -71,6 +78,21 @@ export function AdminLayout() {
 		toast.success("Berhasil logout");
 		navigate({ to: "/login" });
 	};
+
+	if (isLoading) {
+		return (
+			<div className="min-h-screen bg-background flex items-center justify-center">
+				<div className="flex flex-col items-center gap-4">
+					<div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+					<span className="text-sm text-muted-foreground">Memuat...</span>
+				</div>
+			</div>
+		);
+	}
+
+	if (!isAuthenticated) {
+		return null;
+	}
 
 	return (
 		<SidebarProvider>
@@ -196,36 +218,54 @@ export function AdminLayout() {
 							</div>
 						</header>
 						<div className="flex-1 overflow-y-auto p-6 md:p-8">
-							<div className="max-w-7xl mx-auto">
-								<Outlet />
-							</div>
+							<div className="max-w-7xl mx-auto">{children || <Outlet />}</div>
 						</div>
 					</div>
 				</main>
 			</div>
 
 			<Sheet open={showPasswordSheet} onOpenChange={setShowPasswordSheet}>
-				<SheetContent side="right">
-					<SheetHeader>
-						<SheetTitle>Ubah Password</SheetTitle>
+				<SheetContent
+					side="right"
+					className="w-full sm:max-w-md p-0 flex flex-col h-full"
+				>
+					<SheetHeader className="text-left border-b border-border p-8 pb-6 shrink-0">
+						<SheetTitle className="text-2xl">Ubah Password</SheetTitle>
+						<SheetDescription className="text-sm">
+							Amankan akun Anda dengan mengganti password secara berkala.
+						</SheetDescription>
 					</SheetHeader>
-					<div className="grid gap-4 py-6">
+
+					<div className="flex-1 overflow-y-auto p-8 space-y-6">
 						<div className="grid gap-2">
-							<Label>Password Lama</Label>
-							<Input type="password" />
+							<Label className="text-xs uppercase tracking-widest font-bold text-muted-foreground">
+								Password Lama
+							</Label>
+							<Input
+								type="password"
+								className="bg-card border-border h-11 focus-visible:ring-primary/20"
+							/>
 						</div>
 						<div className="grid gap-2">
-							<Label>Password Baru</Label>
-							<Input type="password" />
+							<Label className="text-xs uppercase tracking-widest font-bold text-muted-foreground">
+								Password Baru
+							</Label>
+							<Input
+								type="password"
+								className="bg-card border-border h-11 focus-visible:ring-primary/20"
+							/>
 						</div>
+					</div>
+
+					<div className="px-8 py-6 border-t border-border shrink-0">
 						<Button
-							className="mt-4"
+							className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl shadow-md"
 							onClick={() => {
 								toast.success("Password diubah (simulasi)");
 								setShowPasswordSheet(false);
 							}}
 						>
-							Simpan
+							Simpan Perubahan
 						</Button>
 					</div>
 				</SheetContent>

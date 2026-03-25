@@ -7,12 +7,11 @@ const badgeVariants = cva(
 	{
 		variants: {
 			variant: {
-				default:
-					"border-transparent bg-primary text-primary-foreground shadow-sm",
+				default: "border-transparent bg-primary text-primary-foreground",
 				secondary: "border-transparent bg-secondary text-secondary-foreground",
 				outline: "text-foreground",
 				destructive:
-					"border-transparent bg-destructive text-destructive-foreground shadow-sm",
+					"border-transparent bg-destructive text-destructive-foreground",
 				// Status variants used with semantic tokens in index.css
 				status: "border-transparent text-sm",
 			},

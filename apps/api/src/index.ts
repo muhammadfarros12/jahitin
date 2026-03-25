@@ -1,6 +1,7 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { HTTPException } from "hono/http-exception";
 import { logger } from "hono/logger";
 import { authRouter } from "./modules/auth/routes";
 import { orderIssueRouter } from "./modules/orderIssue/orderIssueRoute";
@@ -15,7 +16,7 @@ const app = new Hono()
 	.use(
 		cors({
 			origin: "*",
-			allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+			allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 			allowHeaders: ["Content-Type", "Authorization"],
 		}),
 	)
@@ -25,7 +26,13 @@ const app = new Hono()
 	.route("/api", publicOrderRouter)
 	.route("/api", orderRouter)
 	.route("/api", statusUpdateRouter)
-	.route("/api", orderIssueRouter);
+	.route("/api", orderIssueRouter)
+	.onError((err, c) => {
+		if (err instanceof HTTPException) {
+			return c.json({ message: err.message }, err.status);
+		}
+		return c.json({ message: "Internal server error" }, 500);
+	});
 
 //export api specification
 export type AppType = typeof app;

@@ -9,6 +9,28 @@ import { createOrderSchema, updateOrderSchema } from "./orderSchema";
 
 export const orderRouter = new Hono<{ Variables: { user: number } }>()
 	.use("*", authMiddleware)
+	.get("/orders/stats", async (c) => {
+		try {
+			const [total, production, pending, completed] = await Promise.all([
+				prisma.order.count(),
+				prisma.order.count({
+					where: { current_status: { not: "ORDER_SELESAI" } },
+				}),
+				prisma.order.count({ where: { current_status: "PENDING" } }),
+				prisma.order.count({ where: { current_status: "ORDER_SELESAI" } }),
+			]);
+			return c.json(
+				{
+					success: true,
+					data: { total, production, pending, completed },
+				},
+				200,
+			);
+		} catch (error) {
+			console.error(error);
+			throw new HTTPException(400, { message: "Failed to fetch stats" });
+		}
+	})
 	.post("/orders", zValidator("json", createOrderSchema), async (c) => {
 		const userId = c.get("user");
 		const body = c.req.valid("json");
@@ -52,14 +74,73 @@ export const orderRouter = new Hono<{ Variables: { user: number } }>()
 		}
 	})
 	.get("/orders", async (c) => {
+		const page = Number(c.req.query("page")) || 1;
+		const limit = Number(c.req.query("limit")) || 10;
+		const search = c.req.query("search") || "";
+		const status = c.req.query("status") || "ALL";
+		const sortBy = c.req.query("sortBy") || "newest";
+		const skip = (page - 1) * limit;
+
 		try {
-			const orderList = await prisma.order.findMany({
-				include: {
-					status_updates: true,
-					production_issues: true,
-				},
-			});
-			return c.json({ success: true, data: orderList }, 200);
+			const where: any = {};
+
+			if (status !== "ALL") {
+				if (status === "AKTIF") {
+					where.current_status = { not: "ORDER_SELESAI" };
+				} else {
+					where.current_status = status;
+				}
+			}
+
+			if (search) {
+				where.OR = [
+					{ customer_name: { contains: search, mode: "insensitive" } },
+					{ order_code: { contains: search, mode: "insensitive" } },
+					{ order_description: { contains: search, mode: "insensitive" } },
+				];
+			}
+
+			let orderBy: any = { created_at: "desc" };
+			if (sortBy === "oldest") orderBy = { created_at: "asc" };
+			if (sortBy === "deadline") {
+				where.current_status = { not: "ORDER_SELESAI" };
+				orderBy = { estimated_finished_date: "asc" };
+			}
+			if (sortBy === "updated") orderBy = { updated_at: "desc" };
+			if (sortBy === "longest_pending") {
+				where.current_status = "PENDING";
+				orderBy = { production_issue: { created_at: "asc" } };
+			}
+
+			const [orderList, total] = await Promise.all([
+				prisma.order.findMany({
+					where,
+					skip,
+					take: limit,
+					include: {
+						status_updates: {
+							include: {
+								user: true,
+							},
+							orderBy: {
+								created_at: "desc",
+							},
+						},
+						production_issue: {
+							include: {
+								resolver: true,
+							},
+						},
+						createdBy: true,
+					},
+					orderBy,
+				}),
+				prisma.order.count({ where }),
+			]);
+			return c.json(
+				{ success: true, data: orderList, total, page, limit },
+				200,
+			);
 		} catch (error) {
 			console.error(error);
 			throw new HTTPException(400, { message: "Failed to fetch order data" });
@@ -77,15 +158,19 @@ export const orderRouter = new Hono<{ Variables: { user: number } }>()
 				where: { id },
 				include: {
 					status_updates: {
+						include: {
+							user: true,
+						},
 						orderBy: {
 							created_at: "desc",
 						},
 					},
 					production_issue: {
-						where: {
-							is_resolved: false,
+						include: {
+							resolver: true,
 						},
 					},
+					createdBy: true,
 				},
 			});
 
