@@ -43,6 +43,7 @@ export const authRouter = new Hono()
 						id: existingUser.id,
 						username: existingUser.name,
 						email: existingUser.email,
+						role: existingUser.role,
 					},
 					token: accessToken,
 				},

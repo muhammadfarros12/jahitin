@@ -1,4 +1,3 @@
-"use client";
 import {
 	createContext,
 	type ReactNode,
@@ -6,7 +5,7 @@ import {
 	useEffect,
 	useState,
 } from "react";
-import type { User } from "@/types";
+import type { Role, User } from "@/types";
 import { apiClient } from "@/utils/api";
 
 interface AuthContextType {
@@ -46,14 +45,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 				if (res.ok) {
 					const data = (await res.json()) as User;
-					const u: User = {
+					const user: User = {
 						id: data.id,
 						name: data.name,
 						email: data.email,
+						role: data.role,
 					};
-					setUser(u);
+					setUser(user);
 					setToken(savedToken);
-					localStorage.setItem("jahitin_user", JSON.stringify(u));
+					localStorage.setItem("jahitin_user", JSON.stringify(user));
 				} else {
 					localStorage.removeItem("token");
 					localStorage.removeItem("jahitin_user");
@@ -77,13 +77,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			});
 			if (!res.ok) return false;
 			const data = (await res.json()) as {
-				data: { id: number; username?: string; name?: string; email: string };
+				data: {
+					id: number;
+					username?: string;
+					name?: string;
+					email: string;
+					role: Role;
+				};
 				token: string;
 			};
 			const u: User = {
 				id: data.data.id,
 				name: data.data.username ?? data.data.name ?? email.split("@")[0],
 				email: data.data.email,
+				role: data.data.role,
 			};
 			setUser(u);
 			setToken(data.token);

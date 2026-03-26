@@ -60,7 +60,7 @@ function RouteComponent() {
 
 	return (
 		<div className="bg-sidebar/50 text-foreground transition-colors duration-300 min-h-screen flex items-center justify-center p-0 lg:p-6 overflow-x-hidden relative">
-			<div className="grid lg:grid-cols-2 w-full max-w-[1240px] bg-card lg:rounded-3xl border-0 lg:border border-border overflow-hidden min-h-screen lg:min-h-[720px] relative z-10 shadow-sm">
+			<div className="grid lg:grid-cols-2 w-full max-w-310 bg-card lg:rounded-3xl border-0 lg:border border-border overflow-hidden min-h-screen lg:min-h-180 relative z-10 shadow-sm">
 				{/* Left Side: Promotional Image & Text */}
 				<div className="hidden lg:flex relative overflow-hidden group border-r border-border/50">
 					<img
@@ -68,7 +68,7 @@ function RouteComponent() {
 						alt="Jahitin Branding"
 						className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
 					/>
-					<div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/10" />
+					<div className="absolute inset-0 bg-linear-to-t from-black/95 via-black/40 to-black/10" />
 
 					{/* Logo on Top Left */}
 					<div className="absolute top-10 left-10 flex items-center gap-3 z-10">
@@ -114,7 +114,7 @@ function RouteComponent() {
 						/>
 					</div>
 
-					<div className="w-full max-w-[400px] flex flex-col items-center">
+					<div className="w-full max-w-100 flex flex-col items-center">
 						{/* Mobile Logo - Added pt-12 to prevent overlap with theme toggle */}
 						<div className="lg:hidden text-center mb-10 pt-12">
 							<div className="inline-flex items-center justify-center mb-4 p-4 rounded-2xl bg-primary/10 text-primary group transition-all duration-500 hover:rotate-12">

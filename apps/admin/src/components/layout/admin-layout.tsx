@@ -1,13 +1,11 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import {
 	ChevronUp,
-	FileBarChart,
 	Key,
 	LayoutDashboard,
 	LogOut,
 	Moon,
 	Scissors,
-	Settings,
 	Sun,
 	User,
 	Users,
@@ -50,6 +48,12 @@ export function AdminLayout({ children }: { children?: React.ReactNode }) {
 	const navigate = useNavigate();
 	const [isDarkMode, setIsDarkMode] = useState(false);
 	const [showPasswordSheet, setShowPasswordSheet] = useState(false);
+	const getPageTitle = (pathname: string) => {
+		// Gunakan .startsWith agar mencakup sub-halaman, misal /dashboard/detail
+		if (pathname.startsWith("/dashboard")) return "Dashboard";
+		if (pathname.startsWith("/users")) return "Manajemen Admin";
+		return "Jahitin System";
+	};
 
 	useEffect(() => {
 		const saved =
@@ -125,32 +129,18 @@ export function AdminLayout({ children }: { children?: React.ReactNode }) {
 
 							<SidebarMenuItem>
 								<SidebarMenuButton
-									disabled
-									className="w-full justify-start h-10 px-3 transition-opacity"
-								>
-									<Users className="h-4 w-4 shrink-0" />
-									<span>Customers</span>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-
-							<SidebarMenuItem>
-								<SidebarMenuButton
-									disabled
-									className="w-full justify-start h-10 px-3 transition-opacity"
-								>
-									<FileBarChart className="h-4 w-4 shrink-0" />
-									<span>Reports</span>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-
-							<SidebarMenuItem>
-								<SidebarMenuButton
-									disabled
-									className="w-full justify-start h-10 px-3 transition-opacity"
-								>
-									<Settings className="h-4 w-4 shrink-0" />
-									<span>Settings</span>
-								</SidebarMenuButton>
+									render={
+										<Link
+											to="/users"
+											className="flex items-center gap-2 w-full h-full px-3"
+										>
+											<Users className="h-4 w-4 shrink-0" />
+											<span>Admin</span>
+										</Link>
+									}
+									isActive={location.pathname === "/users"}
+									className="w-full justify-start h-10 px-0 rounded-md transition-colors"
+								/>
 							</SidebarMenuItem>
 						</SidebarMenu>
 					</SidebarContent>
@@ -201,9 +191,9 @@ export function AdminLayout({ children }: { children?: React.ReactNode }) {
 						<header className="h-14 flex items-center shrink-0 justify-between px-6 border-b border-border">
 							<div className="flex items-center gap-4">
 								<SidebarTrigger className="text-muted-foreground hover:text-foreground" />
-								<div className="h-4 w-[1px] bg-border" />
+								<div className="h-4 w-px bg-border" />
 								<h1 className="text-sm font-semibold text-foreground tracking-tight">
-									Dashboard
+									{getPageTitle(location.pathname)}
 								</h1>
 							</div>
 							<div className="flex items-center gap-3">

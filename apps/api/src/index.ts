@@ -10,7 +10,7 @@ import { publicOrderRouter } from "./modules/orders/publicOrderRoute";
 import { statusUpdateRouter } from "./modules/orders/statusUpdateRoute";
 import { userRouter } from "./modules/user/routes";
 
-console.log("ENV:", process.env.TEST);
+// console.log("ENV:", process.env.TEST);
 const app = new Hono()
 	.use(logger())
 	.use(

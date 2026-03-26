@@ -8,10 +8,13 @@ export type OrderStatus =
 	| "SIAP_DIAMBIL"
 	| "ORDER_SELESAI";
 
+export type Role = "SUPERADMIN" | "ADMIN";
+
 export interface User {
 	id: number;
 	name: string | null;
 	email: string;
+	role: Role;
 }
 
 export interface ProductionIssue {

@@ -11,6 +11,7 @@ async function main() {
 			name: "superadmin",
 			email: "admin@gmail.com",
 			password: hashPassword,
+			role: "SUPERADMIN",
 		},
 	});
 	console.log({ admin });

@@ -1,42 +1,53 @@
-import { isNumberObject } from "node:util/types";
 import { createMiddleware } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
 import jwt from "jsonwebtoken";
+import type { Role } from "../generated/prisma/enums";
+import { prisma } from "../utils/prisma";
 
-export const authMiddleware = createMiddleware(async (c, next) => {
+export const authMiddleware = createMiddleware<{
+	Variables: {
+		user: number;
+		role: Role;
+	};
+}>(async (c, next) => {
 	const authHeader = c.req.header("Authorization");
 
 	if (!authHeader || !authHeader.startsWith("Bearer ")) {
-		throw new HTTPException(401, {
-			message: "Unauthorized",
-		});
+		throw new HTTPException(401, { message: "Unauthorized" });
 	}
 
 	const token = authHeader.split(" ")[1];
 
 	try {
 		const JWT_SECRET = process.env.JWT_SECRET;
+		if (!JWT_SECRET) throw new Error("JWT_SECRET is not defined");
 
-		if (!JWT_SECRET) {
-			throw new Error("JWT_SECRET is not defined");
-		}
 		const payload = jwt.verify(token, JWT_SECRET);
-		// c.set("user", payload.sub);
-		// Guard: pastikan payload adalah object, bukan string
+
 		if (typeof payload === "string" || !payload.sub) {
 			throw new HTTPException(401, { message: "Invalid token payload" });
 		}
 
 		const userId = Number(payload.sub);
-		if (isNumberObject(userId)) {
+		if (Number.isNaN(userId)) {
 			throw new HTTPException(401, { message: "Invalid user id in token" });
 		}
 
-		c.set("user", userId);
-		await next();
-	} catch (_error) {
-		throw new HTTPException(401, {
-			message: "Invalid token",
+		// Ambil role dari database
+		const user = await prisma.user.findUnique({
+			where: { id: userId },
+			select: { role: true },
 		});
+
+		if (!user) {
+			throw new HTTPException(401, { message: "User not found" });
+		}
+
+		c.set("user", userId);
+		c.set("role", user.role);
+		await next();
+	} catch (error) {
+		if (error instanceof HTTPException) throw error;
+		throw new HTTPException(401, { message: "Invalid token" });
 	}
 });

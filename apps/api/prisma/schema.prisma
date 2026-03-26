@@ -12,6 +12,7 @@ model User {
   email          String              @unique
   name           String?
   password       String
+  role           Role                @default(ADMIN)
   createdAt      DateTime            @default(now())
   statusUpdates  OrderStatusUpdate[] @relation("CreatedByUser")
   orders         Order[]             @relation("OrderCreatedByUser")
@@ -85,4 +86,9 @@ enum OrderStatus {
   QUALITY_CHECK
   SIAP_DIAMBIL
   ORDER_SELESAI
+}
+
+enum Role {
+  SUPERADMIN
+  ADMIN
 }

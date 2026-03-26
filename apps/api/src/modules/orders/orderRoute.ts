@@ -112,7 +112,7 @@ export const orderRouter = new Hono<{ Variables: { user: number } }>()
 			if (sortBy === "updated") orderBy = { updated_at: "desc" };
 			if (sortBy === "longest_pending") {
 				where.current_status = "PENDING";
-				orderBy = { production_issue: { created_at: "asc" } };
+				orderBy = { updated_at: "asc" };
 			}
 
 			const [orderList, total] = await Promise.all([
@@ -129,9 +129,12 @@ export const orderRouter = new Hono<{ Variables: { user: number } }>()
 								created_at: "desc",
 							},
 						},
-						production_issue: {
+						production_issues: {
 							include: {
 								resolver: true,
+							},
+							orderBy: {
+								created_at: "desc",
 							},
 						},
 						createdBy: true,
