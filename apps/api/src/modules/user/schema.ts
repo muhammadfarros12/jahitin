@@ -5,3 +5,9 @@ export const adminSchema = z.object({
 	name: z.string().min(2, "Nama minimal 2 karakter").optional(),
 	password: z.string().min(8, "Password Admin minimal 8 karakter"),
 });
+
+export const updateUserSchema = z.object({
+	name: z.string().optional(),
+	email: z.string().email().optional(),
+	password: z.string().min(6, "Password minimal 6 karakter").optional(),
+});

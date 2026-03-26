@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Scissors } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/")({ component: App });
@@ -127,30 +128,15 @@ function App() {
 			<div className="page">
 				<nav className="nav">
 					<div className="nav-brand">
-						<div className="nav-logo">
-							<svg
-								width="18"
-								height="18"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="#FAF7F2"
-								strokeWidth="2"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								aria-label="Jahitin logo"
-							>
-								<title>Jahitin</title>
-								<path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-								<line x1="3" y1="6" x2="21" y2="6" />
-								<path d="M16 10a4 4 0 01-8 0" />
-							</svg>
-						</div>
+						<Scissors className="h-6 w-6 text-primary shrink-0" />
 						<div>
-							<div className="nav-name">Jahitin</div>
+							<span className="font-bold text-xl text-foreground tracking-tight">
+								Jahitin
+							</span>
 							<div className="nav-tagline">Konveksi Terpercaya</div>
 						</div>
 					</div>
-					<a href="http://localhost:4000" className="nav-admin">
+					<a href={import.meta.env.VITE_ADMIN_URL} className="nav-admin">
 						Admin →
 					</a>
 				</nav>

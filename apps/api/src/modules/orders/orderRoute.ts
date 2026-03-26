@@ -1,6 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
+import type { OrderStatus, Prisma } from "../../generated/prisma/client";
 import { authMiddleware } from "../../middleware/authMiddleware";
 import { generateOrderCode } from "../../utils/orderCodeGenerator";
 import { prisma } from "../../utils/prisma";
@@ -82,13 +83,13 @@ export const orderRouter = new Hono<{ Variables: { user: number } }>()
 		const skip = (page - 1) * limit;
 
 		try {
-			const where: any = {};
+			const where: Prisma.OrderWhereInput = {};
 
 			if (status !== "ALL") {
 				if (status === "AKTIF") {
 					where.current_status = { not: "ORDER_SELESAI" };
 				} else {
-					where.current_status = status;
+					where.current_status = status as OrderStatus;
 				}
 			}
 
@@ -100,7 +101,9 @@ export const orderRouter = new Hono<{ Variables: { user: number } }>()
 				];
 			}
 
-			let orderBy: any = { created_at: "desc" };
+			let orderBy: Prisma.OrderOrderByWithRelationInput = {
+				created_at: "desc",
+			};
 			if (sortBy === "oldest") orderBy = { created_at: "asc" };
 			if (sortBy === "deadline") {
 				where.current_status = { not: "ORDER_SELESAI" };
@@ -109,7 +112,7 @@ export const orderRouter = new Hono<{ Variables: { user: number } }>()
 			if (sortBy === "updated") orderBy = { updated_at: "desc" };
 			if (sortBy === "longest_pending") {
 				where.current_status = "PENDING";
-				orderBy = { production_issue: { created_at: "asc" } };
+				orderBy = { updated_at: "asc" };
 			}
 
 			const [orderList, total] = await Promise.all([
@@ -126,9 +129,12 @@ export const orderRouter = new Hono<{ Variables: { user: number } }>()
 								created_at: "desc",
 							},
 						},
-						production_issue: {
+						production_issues: {
 							include: {
 								resolver: true,
+							},
+							orderBy: {
+								created_at: "desc",
 							},
 						},
 						createdBy: true,

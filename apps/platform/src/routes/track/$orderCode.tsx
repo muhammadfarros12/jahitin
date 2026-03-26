@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Scissors } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getOrderByCode, type Order } from "@/utils/api";
 
@@ -327,25 +328,10 @@ function TrackingPage() {
 			<div className="page">
 				<nav className="nav">
 					<Link to="/" className="nav-brand">
-						<div className="nav-logo">
-							<svg
-								width="16"
-								height="16"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="#FAF7F2"
-								strokeWidth="2"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								aria-label="Jahitin logo"
-							>
-								<title>Jahitin</title>
-								<path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-								<line x1="3" y1="6" x2="21" y2="6" />
-								<path d="M16 10a4 4 0 01-8 0" />
-							</svg>
-						</div>
-						<div className="nav-name">Jahitin</div>
+						<Scissors className="h-6 w-6 text-primary shrink-0" />
+						<span className="font-bold text-xl text-foreground tracking-tight">
+							Jahitin
+						</span>
 					</Link>
 					<div className="nav-right">
 						{order && (
