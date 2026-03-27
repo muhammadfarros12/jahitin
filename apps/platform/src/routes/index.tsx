@@ -18,164 +18,93 @@ function App() {
 	}
 
 	return (
-		<>
-			<style>{`
-				@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
-
-				*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-				body {
-					font-family: 'DM Sans', sans-serif;
-					background: #FAF7F2;
-					color: #1C1917;
-					min-height: 100vh;
-				}
-
-				.page { min-height: 100vh; display: flex; flex-direction: column; }
-
-				.nav {
-					padding: 20px 40px;
-					display: flex; align-items: center; justify-content: space-between;
-					border-bottom: 1px solid #E8E0D5;
-					background: #FAF7F2; position: sticky; top: 0; z-index: 10;
-				}
-				.nav-brand { display: flex; align-items: center; gap: 10px; }
-				.nav-logo {
-					width: 36px; height: 36px; background: #1C1917;
-					border-radius: 8px; display: flex; align-items: center; justify-content: center;
-				}
-				.nav-name {
-					font-family: 'Playfair Display', serif;
-					font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; color: #1C1917;
-				}
-				.nav-tagline {
-					font-size: 0.75rem; color: #78716C;
-					letter-spacing: 0.05em; text-transform: uppercase;
-				}
-				.nav-admin {
-					font-size: 0.8rem; color: #78716C; text-decoration: none;
-					padding: 6px 14px; border: 1px solid #D4C9BC; border-radius: 20px; transition: all 0.2s;
-				}
-				.nav-admin:hover { background: #1C1917; color: #FAF7F2; border-color: #1C1917; }
-
-				.hero {
-					flex: 1; display: flex; flex-direction: column; align-items: center;
-					justify-content: center;
-					padding: 80px 40px;
-					max-width: 700px; margin: 0 auto; width: 100%; text-align: center;
-				}
-				.hero-eyebrow {
-					display: inline-flex; align-items: center; gap: 8px;
-					font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
-					color: #A16207; font-weight: 500; margin-bottom: 20px;
-				}
-				.hero-eyebrow::before, .hero-eyebrow::after {
-					content: ''; display: block; width: 24px; height: 1px; background: #A16207;
-				}
-				.hero-title {
-					font-family: 'Playfair Display', serif;
-					font-size: clamp(2.2rem, 5vw, 3.2rem);
-					font-weight: 700; line-height: 1.15;
-					letter-spacing: -0.03em; color: #1C1917; margin-bottom: 16px;
-				}
-				.hero-title em { font-style: italic; color: #A16207; }
-				.hero-sub {
-					font-size: 1rem; color: #78716C;
-					line-height: 1.6; font-weight: 300; margin-bottom: 48px;
-				}
-
-				.search-form {
-					display: flex; width: 100%; background: #fff;
-					border: 1.5px solid #D4C9BC; border-radius: 12px; overflow: hidden;
-					box-shadow: 0 2px 20px rgba(28,25,23,0.06);
-					transition: box-shadow 0.2s, border-color 0.2s;
-				}
-				.search-form:focus-within {
-					border-color: #1C1917; box-shadow: 0 4px 24px rgba(28,25,23,0.12);
-				}
-				.search-input {
-					flex: 1; border: none; outline: none; padding: 16px 20px;
-					font-family: 'DM Sans', sans-serif; font-size: 1rem;
-					background: transparent; color: #1C1917; letter-spacing: 0.04em;
-				}
-				.search-input::placeholder { color: #A8A29E; }
-				.search-btn {
-					padding: 16px 28px; background: #1C1917; color: #FAF7F2;
-					border: none; cursor: pointer;
-					font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 500;
-					transition: background 0.2s; white-space: nowrap;
-				}
-				.search-btn:hover { background: #A16207; }
-
-				.search-hint {
-					margin-top: 14px; font-size: 0.8rem; color: #A8A29E;
-				}
-				.search-hint strong { color: #78716C; }
-
-				.page-footer {
-					padding: 24px 40px; border-top: 1px solid #E8E0D5;
-					display: flex; align-items: center; justify-content: space-between;
-					font-size: 0.78rem; color: #A8A29E;
-				}
-
-				@media (max-width: 600px) {
-					.nav { padding: 16px 20px; }
-					.hero { padding: 48px 20px; }
-					.page-footer { flex-direction: column; gap: 4px; text-align: center; }
-				}
-			`}</style>
-
-			<div className="page">
-				<nav className="nav">
-					<div className="nav-brand">
-						<Scissors className="h-6 w-6 text-primary shrink-0" />
+		<div className="min-h-screen bg-background text-foreground font-sans flex flex-col">
+			{/* Nav */}
+			<nav className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur-sm">
+				<div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+					<div className="flex items-center gap-2.5">
+						<div className="bg-primary p-1.5 rounded-lg">
+							<Scissors className="h-5 w-5 text-primary-foreground" />
+						</div>
 						<div>
-							<span className="font-bold text-xl text-foreground tracking-tight">
+							<span className="font-bold text-lg tracking-tight text-foreground block leading-none">
 								Jahitin
 							</span>
-							<div className="nav-tagline">Konveksi Terpercaya</div>
+							<span className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">
+								Konveksi Terpercaya
+							</span>
 						</div>
 					</div>
-					<a href={import.meta.env.VITE_ADMIN_URL} className="nav-admin">
+					<a
+						href={import.meta.env.VITE_ADMIN_URL}
+						className="text-xs font-bold text-muted-foreground hover:text-foreground transition-colors border border-border px-3 py-1.5 rounded-full hover:bg-muted hover:border-foreground"
+					>
 						Admin →
 					</a>
-				</nav>
+				</div>
+			</nav>
 
-				<section className="hero">
-					<div className="hero-eyebrow">Lacak Pesanan Anda</div>
-					<h1 className="hero-title">
-						Pantau Status <em>Order</em> Anda Secara Real-time
-					</h1>
-					<p className="hero-sub">
-						Masukkan kode order yang Anda terima saat pemesanan untuk melihat
-						status terkini dan riwayat perjalanan pesanan Anda.
-					</p>
+			{/* Hero */}
+			<section className="flex-1 flex flex-col items-center justify-center px-6 py-20 max-w-5xl mx-auto w-full text-center">
+				{/* Eyebrow */}
+				<div className="inline-flex items-center gap-3 mb-6">
+					<div className="h-px w-6 bg-primary" />
+					<span className="text-xs font-bold uppercase tracking-widest text-primary">
+						Lacak Pesanan Anda
+					</span>
+					<div className="h-px w-6 bg-primary" />
+				</div>
 
-					<form className="search-form" onSubmit={handleSearch}>
-						<input
-							className="search-input"
-							type="text"
-							placeholder="Contoh: JAH260319001"
-							value={orderCode}
-							onChange={(e) => setOrderCode(e.target.value.toUpperCase())}
-							spellCheck={false}
-							autoComplete="off"
-						/>
-						<button className="search-btn" type="submit">
-							Cek Status
-						</button>
-					</form>
-					<p className="search-hint">
-						Kode order dikirimkan admin saat pesanan Anda diterima.{" "}
-						<strong>Contoh: JAH260320420</strong>
-					</p>
-				</section>
+				{/* Title */}
+				<h1 className="font-serif text-4xl sm:text-5xl font-bold leading-tight tracking-tight text-foreground mb-4">
+					Pantau Status{" "}
+					<em className="italic text-primary not-italic font-serif">Order</em>{" "}
+					Anda Secara Real-time
+				</h1>
 
-				<footer className="page-footer">
+				{/* Subtitle */}
+				<p className="text-base text-muted-foreground leading-relaxed font-light max-w-lg mb-12">
+					Masukkan kode order yang Anda terima saat pemesanan untuk melihat
+					status terkini dan riwayat perjalanan pesanan Anda.
+				</p>
+
+				{/* Search Form */}
+				<form
+					className="flex w-full max-w-xl bg-card border border-border rounded-xl overflow-hidden shadow-sm focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-all"
+					onSubmit={handleSearch}
+				>
+					<input
+						type="text"
+						placeholder="Contoh: JAH260319001"
+						value={orderCode}
+						onChange={(e) => setOrderCode(e.target.value.toUpperCase())}
+						spellCheck={false}
+						autoComplete="off"
+						className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground text-sm font-mono outline-none px-5 py-4"
+					/>
+					<button
+						type="submit"
+						className="px-6 py-4 bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors whitespace-nowrap"
+					>
+						Cek Status
+					</button>
+				</form>
+
+				<p className="mt-4 text-xs text-muted-foreground">
+					Kode order dikirimkan admin saat pesanan Anda diterima.{" "}
+					<strong className="text-foreground/60 font-mono">
+						Contoh: JAH260320420
+					</strong>
+				</p>
+			</section>
+
+			{/* Footer */}
+			<footer className="border-t border-border px-6 py-5">
+				<div className="max-w-5xl mx-auto flex items-center justify-between text-xs text-muted-foreground">
 					<span>© 2026 Jahitin. Semua hak dilindungi.</span>
 					<span>Butuh bantuan? Hubungi kami</span>
-				</footer>
-			</div>
-		</>
+				</div>
+			</footer>
+		</div>
 	);
 }
