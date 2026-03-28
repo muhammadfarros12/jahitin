@@ -171,7 +171,7 @@ export const orderRouter = new Hono<{ Variables: { user: number } }>()
 							created_at: "desc",
 						},
 					},
-					production_issue: {
+					production_issues: {
 						include: {
 							resolver: true,
 						},
