@@ -1,5 +1,7 @@
 TEST=hello_server_digunakan_di_server_side
 VITE_TEST=hello_client_digunakan_di_client_side
 
-DATABASE_URL=isisendiri
-JWT_SECRET="jwt secret"
+DATABASE_URL=postgresql://postgres:postgres@localhost:5440/postgres
+JWT_SECRET="jahitin_secret_key_2024"
+VITE_PLATFORM_URL=linkplatform
+VITE_ADMIN_URL=linkadmin

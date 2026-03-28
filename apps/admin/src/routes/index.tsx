@@ -1,7 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/")({ component: App });
-
-function App() {
-	return <div>Halaman untuk admin</div>;
-}
+export const Route = createFileRoute("/")({
+	beforeLoad: () => {
+		const token =
+			typeof window !== "undefined" ? localStorage.getItem("token") : null;
+		if (token) {
+			throw redirect({ to: "/dashboard" });
+		} else {
+			throw redirect({ to: "/login" });
+		}
+	},
+});

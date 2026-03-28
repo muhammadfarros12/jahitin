@@ -23,3 +23,9 @@ export const updateOrderSchema = z.object({
 		.optional(),
 });
 export type UpdateOrderInput = z.infer<typeof updateOrderSchema>;
+
+export type UpdateOrderData = {
+	customer_name?: string;
+	order_description?: string;
+	estimated_finished_date?: Date;
+};
