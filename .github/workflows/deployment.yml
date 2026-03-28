@@ -56,6 +56,7 @@ jobs:
           host: 103.217.144.200
           username: farros
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command_timeout: 30m
           # Script di bawah ini hanya jalan KALAU koneksi SSH sudah sukses
           script: |
             cd live
