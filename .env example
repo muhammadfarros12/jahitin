@@ -5,3 +5,4 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5440/postgres
 JWT_SECRET="jahitin_secret_key_2024"
 VITE_PLATFORM_URL=linkplatform
 VITE_ADMIN_URL=linkadmin
+CLOUDFLARE_TUNNEL_TOKEN=token_cloudflare_tunnel
