@@ -7,6 +7,8 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml ./
 COPY apps/api/package.json ./apps/api/
 
+COPY apps/api/prisma ./apps/api/prisma/
+
 RUN pnpm install
 
 COPY . .
@@ -17,4 +19,4 @@ RUN pnpm build
 
 EXPOSE 8000
 
-CMD [ "sh", "-c", "pnpm prisma migrate deploy && pnpm prisma db seed && node dist/src/index.js" ]
+CMD [ "sh", "-c", "pnpm prisma migrate deploy && pnpm run seed && pnpm start" ]

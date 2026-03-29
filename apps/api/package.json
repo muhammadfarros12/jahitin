@@ -3,7 +3,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "pnpm with-env tsx watch src/index.ts",
-		"build": "tsc",
+		"build": "tsup",
 		"start": "node dist/index.js",
 		"with-env": "dotenv -e ../../.env --",
 		"db:migrate": "pnpm prisma migrate dev",
@@ -27,6 +27,7 @@
 		"@types/bcrypt": "^6.0.0",
 		"@types/node": "^20.11.17",
 		"dotenv-cli": "^11.0.0",
+		"tsup": "^8.5.1",
 		"tsx": "^4.7.1",
 		"typescript": "^5.8.3"
 	}
