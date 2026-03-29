@@ -24,17 +24,11 @@ const config = defineConfig({
 	],
 	envDir: "../../",
 	preview: {
-        allowedHosts: [
-            "jahitin.frsproject.xyz",
-            "admin-jahitin.frsproject.xyz"
-        ],
-    },
-    server: {
-        allowedHosts: [
-            "jahitin.frsproject.xyz",
-            "admin-jahitin.frsproject.xyz"
-        ],
-    }
+		allowedHosts: ["jahitin.frsproject.xyz", "admin-jahitin.frsproject.xyz"],
+	},
+	server: {
+		allowedHosts: ["jahitin.frsproject.xyz", "admin-jahitin.frsproject.xyz"],
+	},
 });
 
 export default config;
