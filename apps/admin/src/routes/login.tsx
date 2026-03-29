@@ -223,9 +223,7 @@ function RouteComponent() {
 							<p className="text-sm text-muted-foreground">
 								Bukan Admin?{" "}
 								<a
-									href={
-										import.meta.env.VITE_PLATFORM_URL || "http://localhost:3000"
-									}
+									href={import.meta.env.VITE_PLATFORM_URL}
 									className="text-primary font-bold hover:underline transition-all"
 								>
 									Track Pesanan

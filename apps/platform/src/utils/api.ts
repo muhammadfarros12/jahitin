@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8000";
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export interface OrderStatusUpdate {
 	id: number;
@@ -36,7 +36,7 @@ export interface Order {
 }
 
 export async function getOrderByCode(orderCode: string): Promise<Order | null> {
-	const res = await fetch(`${API_BASE}/api/track/${orderCode}`);
+	const res = await fetch(`${apiUrl}/api/track/${orderCode}`);
 	if (res.status === 404) return null;
 	if (!res.ok) throw new Error("Gagal mengambil data order");
 	const json = await res.json();
